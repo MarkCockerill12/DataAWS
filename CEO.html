@@ -2,7 +2,7 @@
     <head><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>CEO</title>
     <link rel="stylesheet" href="css.css"/>
-    <script src="js.js"></script>
+    <script src="js.js" defer></script>
     </head>
 
 <!-- inspiration from https://github.com/wdraghwendra/phpmysql -->
@@ -12,7 +12,7 @@
   
     <form name="frmContact" class="needs-validation" method="post" action="php.php">
     <div class="form-row">
-      
+
       <!-- /* From Uiverse.io by 3bdel3ziz-T */  -->
       <!-- this is the dropdown menu to select the query type -->
       <div class="select">
@@ -47,33 +47,43 @@
   
       <!-- this will be the text input for query -->
       <div class="param">
-        <label>Title:</label><input name="title" required id="title" />
-        <label>Content:</label><input name="content" required id="content" />
+        <label id="titleLabel">Title</label><input name="title" required id="title" />
+        <br>
+        <label id="contentLabel">FROM:</label><input name="content" required id="content" />
+        <div id="extraParams" style="display: none;">
+          <label>AS:</label>
+          <select name="as" id="as">
+            <option value="none">None</option>
+            <option value="as">AS</option>
+          </select>
+          <input type="text" name="asValue" id="asValue" style="display: none;" placeholder="AS Value" />
+          <label>GROUP BY:</label>
+          <select name="groupBy" id="groupBy">
+            <option value="none">None</option>
+            <option value="groupBy">GROUP BY</option>
+          </select>
+          <input type="text" name="groupByValue" id="groupByValue" style="display: none;" placeholder="Group By Value" />
+          <label>MIN/MAX:</label>
+          <select name="minMax" id="minMax">
+            <option value="none">None</option>
+            <option value="min">MIN</option>
+            <option value="max">MAX</option>
+          </select>
+          <input type="text" name="minMaxValue" id="minMaxValue" style="display: none;" placeholder="MIN/MAX Value" />
+        </div>
         <input type="hidden" name="selectedOption" id="selectedOption" value="Choose Query" />
         <button class="button" type="submit" title="Confirm" id="confirmButton">Confirm</button>
-  
-  
+      </div>
       </div>
     </form>
     </div>
-  
+
+      
   </div>
   
-  <!-- this updates the variable for whatever query type you select -->
-  <script>
-    document.querySelectorAll('.options input[type="radio"]').forEach(radio => {
-      radio.addEventListener('change', function() {
-        document.getElementById('selectedOption').value = this.nextElementSibling.getAttribute('data-txt');
-      });
-    });
   
-  //THIS PART IS JUST BUG TESTING
-    document.getElementById('confirmButton').addEventListener('click', function() {
-      const title = document.getElementById('title').value;
-      const content = document.getElementById('content').value;
-      const selectedOption = document.getElementById('selectedOption').value;
-      alert(`Title: ${title}, Content: ${content}, Selected Option: ${selectedOption}`);
-    });
+  <script>
+  
   </script>
   </body>
   </html>

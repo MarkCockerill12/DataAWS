@@ -30,16 +30,19 @@ if (isset($_POST['title']) && isset($_POST['content']) && isset($_POST['selected
         $q = $conn->prepare($sql);
         $q->execute(array(':title' => $title, ':content' => $content));
         echo "Record inserted successfully.";
+        
     } elseif ($selectedOption == "DELETE") {
         $sql = "DELETE FROM News WHERE Titolo_news = :title";
         $q = $conn->prepare($sql);
         $q->execute(array(':title' => $title));
         echo "Record deleted successfully.";
+
     } elseif ($selectedOption == "UPDATE") {
         $sql = "UPDATE News SET Contenuto_news = :content WHERE Titolo_news = :title";
         $q = $conn->prepare($sql);
         $q->execute(array(':title' => $title, ':content' => $content));
         echo "Record updated successfully.";
+
     } else {
         echo "Invalid operation.";
     }
