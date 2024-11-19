@@ -127,18 +127,29 @@ html, body {
     background-size: 55px 55px;
   }
   
-  .form-row {
+  /* .form-row {
     display: flex;
     align-items: center;
     gap: 20px; 
-  }
+  } */
 
-.param {
+.firstParam {
   display: flex;
   flex-direction:row;
-  gap: 10px; /* Adjust the gap between the input fields as needed */
+  gap: 10px; 
 }
 
+.secondParam {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.thirdParam {
+  display: flex;
+  flex-direction:row;
+  gap: 10px; 
+}
 
   
 

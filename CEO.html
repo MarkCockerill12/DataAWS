@@ -46,10 +46,34 @@
       </div>
   
       <!-- this will be the text input for query -->
-      <div class="param">
-        <label id="titleLabel">Title</label><input name="title" required id="title" />
+      <div class="firstParam">
+
+        <label id="titleLabel">Title</label>
+        <input name="title" required id="title" />
+        <div id="dynamicTitleFields"></div>
+        <button type="button" id="addTitleFieldButton">Add Field</button>
+      </div>
+
         <br>
-        <label id="contentLabel">FROM:</label><input name="content" required id="content" />
+
+      <div class="secondParam">
+        <label id="contentLabel">FROM:</label>
+        <input name="content" required id="content" />
+      </div>
+
+      <br>
+
+      <div class="thirdParam">
+        <label id="whereLabel">WHERE: </label>
+          <input name="whereField" id="whereField" placeholder="Where Field" />
+          <select name="whereRelation" id="whereRelation">
+            <option value="=">=</option>
+            <option value="LIKE">LIKE</option>
+          </select>
+          <input name="whereValue" id="whereValue" placeholder="Value" />
+        <div id="dynamicWhereFields"></div>
+        <button type="button" id="addWhereFieldButton">Add Parameter</button>
+
         <div id="extraParams" style="display: none;">
           <label>AS:</label>
           <select name="as" id="as">
@@ -63,16 +87,11 @@
             <option value="groupBy">GROUP BY</option>
           </select>
           <input type="text" name="groupByValue" id="groupByValue" style="display: none;" placeholder="Group By Value" />
-          <label>MIN/MAX:</label>
-          <select name="minMax" id="minMax">
-            <option value="none">None</option>
-            <option value="min">MIN</option>
-            <option value="max">MAX</option>
-          </select>
-          <input type="text" name="minMaxValue" id="minMaxValue" style="display: none;" placeholder="MIN/MAX Value" />
         </div>
+
+
         <input type="hidden" name="selectedOption" id="selectedOption" value="Choose Query" />
-        <button class="button" type="submit" title="Confirm" id="confirmButton">Confirm</button>
+        <button class="button" type="submit" title="Confirm" onclick="showSQLQuery()" id="confirmButton">Confirm</button>
       </div>
       </div>
     </form>
