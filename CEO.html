@@ -11,7 +11,6 @@
   <div class="container">
   
     <form name="frmContact" class="needs-validation" method="post" action="php.php">
-    <div class="form-row">
 
       <!-- /* From Uiverse.io by 3bdel3ziz-T */  -->
       <!-- this is the dropdown menu to select the query type -->
@@ -45,11 +44,25 @@
         </div>
       </div>
   
+    <div class="THEquery" style="display: none;">
       <!-- this will be the text input for query -->
       <div class="firstParam">
 
         <label id="titleLabel">Title</label>
+        <select name="titleFieldType" id="titleFieldType">
+          <option value="none">None</option>
+          <option value="max">MAX</option>
+          <option value="min">MIN</option>
+          <option value="sum">SUM</option>
+          <option value="avg">AVG</option>
+          <option value="count">COUNT</option>
+        </select>
         <input name="title" required id="title" />
+        <select name="as" id="as">
+          <option value="none">None</option>
+          <option value="as">AS</option>
+        </select>
+        <input type="text" name="asValue" id="asValue" style="display: none;" placeholder="AS Value" />
         <div id="dynamicTitleFields"></div>
         <button type="button" id="addTitleFieldButton">Add Field</button>
       </div>
@@ -59,11 +72,13 @@
       <div class="secondParam">
         <label id="contentLabel">FROM:</label>
         <input name="content" required id="content" />
+        <div id="dynamicFromFields"></div>
+          <button type="button" id="addFromFieldButton">Add FROM</button>
       </div>
 
       <br>
 
-      <div class="thirdParam">
+      <div class="thirdParam" >
         <label id="whereLabel">WHERE: </label>
           <input name="whereField" id="whereField" placeholder="Where Field" />
           <select name="whereRelation" id="whereRelation">
@@ -73,29 +88,46 @@
           <input name="whereValue" id="whereValue" placeholder="Value" />
         <div id="dynamicWhereFields"></div>
         <button type="button" id="addWhereFieldButton">Add Parameter</button>
+      </div>
 
-        <div id="extraParams" style="display: none;">
-          <label>AS:</label>
-          <select name="as" id="as">
-            <option value="none">None</option>
-            <option value="as">AS</option>
-          </select>
-          <input type="text" name="asValue" id="asValue" style="display: none;" placeholder="AS Value" />
+      <div id="extraParams" style="display: none;">
+        <br>
+        <div class="fourthParam">
           <label>GROUP BY:</label>
-          <select name="groupBy" id="groupBy">
-            <option value="none">None</option>
-            <option value="groupBy">GROUP BY</option>
-          </select>
-          <input type="text" name="groupByValue" id="groupByValue" style="display: none;" placeholder="Group By Value" />
+            <select name="groupBy" id="groupBy">
+              <option value="none">None</option>
+              <option value="groupBy">GROUP BY</option>
+            </select>
+            <input type="text" name="groupByValue" id="groupByValue" style="display: none;" placeholder="Group By Value" />
         </div>
 
+        <br>
 
+        <div class="fifthParam">
+          <label>ORDER BY:</label>
+            <select name="orderByFieldType" id="orderByFieldType">
+              <option value="none">None</option>
+              <option value="max">MAX</option>
+              <option value="min">MIN</option>
+              <option value="sum">SUM</option>
+              <option value="avg">AVG</option>
+              <option value="count">COUNT</option>
+            </select>
+            <input type="text" name="orderByValue" id="orderByValue" style="display: none;" placeholder="Order By Value" />
+            <select name="orderBy" id="orderBy">
+              <option value="none">None</option>
+              <option value="asc">ASC</option>
+              <option value="desc">DESC</option>
+            </select>
+           
+        </div>
+      </div>
+      <br>
         <input type="hidden" name="selectedOption" id="selectedOption" value="Choose Query" />
         <button class="button" type="submit" title="Confirm" onclick="showSQLQuery()" id="confirmButton">Confirm</button>
       </div>
-      </div>
-    </form>
     </div>
+    </form>
 
       
   </div>

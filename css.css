@@ -127,11 +127,11 @@ html, body {
     background-size: 55px 55px;
   }
   
-  /* .form-row {
-    display: flex;
-    align-items: center;
-    gap: 20px; 
-  } */
+.extraParam {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
 
 .firstParam {
   display: flex;
@@ -146,6 +146,18 @@ html, body {
 }
 
 .thirdParam {
+  display: flex;
+  flex-direction:row;
+  gap: 10px; 
+}
+
+.fourthParam {
+  display: flex;
+  flex-direction:row;
+  gap: 10px; 
+}
+
+.fifthParam {
   display: flex;
   flex-direction:row;
   gap: 10px; 
