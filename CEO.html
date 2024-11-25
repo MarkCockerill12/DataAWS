@@ -22,9 +22,9 @@
                 <button class="tablink" onclick="openTab(event, 'DELETE')">DELETE</button>
             </div>
             <div id="tabContent" class="tabcontent" style="display: block;">
-                <h2 id="tabTitle">SELECT Function</h2>
-                <p id="tabDescription">Explanation and examples for the SELECT function.</p>
-                <img id="tabImage" src="select_example.png" alt="SELECT Example">
+                <h2 id="tabTitle"></h2>
+                <p id="tabDescription"></p>
+                <!-- <img id="tabImage" src="select_example.png" alt="SELECT Example"> -->
             </div>
         </div>
     </div>
@@ -137,6 +137,22 @@
               <option value="desc">DESC</option>
             </select>
           </div>
+
+          <br>
+          <div class="sixthParam">
+            <label>JOIN:</label>
+            <select name="joinType" id="joinType">
+              <option value="none">None</option>
+              <option value="inner">INNER JOIN</option>
+              <option value="left">LEFT JOIN</option>
+              <option value="right">RIGHT JOIN</option>
+              <option value="full outer">FULL JOIN</option>
+            </select>
+            <input type="text" name="Table" id="Table" style="display: none;" placeholder="Table" />
+            <input type="text" name="leftAttribute" id="leftAttribute" style="display: none;" placeholder="Left Attribute" />
+            <input type="text" name="rightAttribute" id="rightAttribute" style="display: none;" placeholder="Right Attribute" />
+          </div>
+
         </div>
         <br>
         <input type="hidden" name="selectedOption" id="selectedOption" value="Choose Query" />

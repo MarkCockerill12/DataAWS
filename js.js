@@ -60,7 +60,7 @@ function openTab(evt, tabName) {
 
     if (tabName === 'SELECT') {
         tabTitle.textContent = 'SELECT Function';
-        tabDescription.textContent = 'Explanation and examples for the SELECT function.';
+        tabDescription.textContent = 'Explanation and examples for the SELECT function. FULL OUTER JOIN works by unifying left join and right join, this is because mySQL doesnt allow for FULL JOIN to be executed';
         tabImage.src = 'select_example.png';
         tabImage.alt = 'SELECT Example';
     } else if (tabName === 'INSERT') {
@@ -141,6 +141,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const secondParam = document.querySelector('.secondParam');
             const thirdParam = document.querySelector('.thirdParam');
             const whereLabel = document.getElementById('whereLabel');
+            const sixthParam = document.querySelector('.sixthParam');
+
 
             // Clear all input fields
             document.querySelectorAll('input[type="text"], select').forEach(input => {
@@ -159,6 +161,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 thirdParam.style.display = 'block';
                 extraParams.style.display = 'block';
                 orderByFieldType.style.display = 'none';
+                sixthParam.style.display = 'block';
             } else if (selectedOption === 'INSERT') {
                 THEquery.style.display = 'block';
                 titleLabel.textContent = 'INSERT INTO: ';
@@ -188,6 +191,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 thirdParam.style.display = 'none';
                 extraParams.style.display = 'none';
                 orderByFieldType.style.display = 'none';
+                sixthParam.style.display = 'none';
             }
         });
     });
@@ -302,6 +306,26 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+
+    // Add event listener for joinType select
+    const joinTypeElement = document.getElementById('joinType');
+    if (joinTypeElement) {
+        joinTypeElement.addEventListener('change', function() {
+            const table = document.getElementById('Table');
+            const leftAttribute = document.getElementById('leftAttribute');
+            const rightAttribute = document.getElementById('rightAttribute');
+            if (this.value !== 'none') {
+                table.style.display = 'block';
+                leftAttribute.style.display = 'block';
+                rightAttribute.style.display = 'block';
+            } else {
+                table.style.display = 'none';
+                leftAttribute.style.display = 'none';
+                rightAttribute.style.display = 'none';
+            }
+        });
+    }
+
     const addWhereFieldButton = document.getElementById('addWhereFieldButton');
     if (addWhereFieldButton) {
         addWhereFieldButton.addEventListener('click', function() {
@@ -344,11 +368,16 @@ function showSQLQuery() {
     const orderByFieldType = document.getElementById('orderByFieldType').value;
     const orderBy = document.getElementById('orderBy').value;
     const orderByValue = document.getElementById('orderByValue').value;
+    const joinType = document.getElementById('joinType').value;
+    const table = document.getElementById('Table').value;
+    const leftAttribute = document.getElementById('leftAttribute').value;
+    const rightAttribute = document.getElementById('rightAttribute').value;
     const dynamicTitleFields = Array.from(document.querySelectorAll('input[name="dynamicTitleField[]"]')).map(input => input.value);
     const dynamicTitleFieldTypes = Array.from(document.querySelectorAll('select[name="dynamicTitleFieldType[]"]')).map(select => select.value);
     const dynamicAs = Array.from(document.querySelectorAll('select[name="dynamicAs[]"]')).map(select => select.value);
     const dynamicAsValues = Array.from(document.querySelectorAll('input[name="dynamicAsValue[]"]')).map(input => input.value);
-    const dynamicFromFields = Array.from(document.querySelectorAll('input[name="dynamicFromField[]"]')).map(input => input.value);    const dynamicWhereLogics = Array.from(document.querySelectorAll('select[name="dynamicWhereLogic[]"]')).map(select => select.value);
+    const dynamicFromFields = Array.from(document.querySelectorAll('input[name="dynamicFromField[]"]')).map(input => input.value);
+    const dynamicWhereLogics = Array.from(document.querySelectorAll('select[name="dynamicWhereLogic[]"]')).map(select => select.value);
     const dynamicWhereFields = Array.from(document.querySelectorAll('input[name="dynamicWhereField[]"]')).map(input => input.value);
     const dynamicWhereRelations = Array.from(document.querySelectorAll('select[name="dynamicWhereRelation[]"]')).map(select => select.value);
     const dynamicWhereValues = Array.from(document.querySelectorAll('input[name="dynamicWhereValue[]"]')).map(input => input.value);
@@ -373,6 +402,10 @@ function showSQLQuery() {
         dynamicFromFields.forEach(field => {
             sql += `, ${field}`;
         });
+        if (joinType !== 'none' && table && leftAttribute && rightAttribute) {
+            const joinClause = joinType === 'full' ? 'FULL OUTER JOIN' : `${joinType.toUpperCase()} JOIN`;
+            sql += ` ${joinClause} ${table} ON ${leftAttribute}=${rightAttribute}`;
+        }
         if (whereField || dynamicWhereFields.length) {
             sql += ` WHERE ${whereField} ${whereRelation} '${whereRelation === 'LIKE' ? `%${whereValue}%` : whereValue}'`;
             dynamicWhereFields.forEach((field, index) => {

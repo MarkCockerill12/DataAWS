@@ -28,6 +28,10 @@ if (isset($_POST['title']) && isset($_POST['content']) && isset($_POST['selected
     $orderByFieldType = isset($_POST['orderByFieldType']) ? $_POST['orderByFieldType'] : 'none';
     $orderByValue = isset($_POST['orderByValue']) ? $_POST['orderByValue'] : '';
     $as = isset($_POST['as']) && $_POST['as'] === 'as' ? $_POST['asValue'] : '';
+    $joinType = isset($_POST['joinType']) ? $_POST['joinType'] : 'none';
+    $table = isset($_POST['Table']) ? $_POST['Table'] : '';
+    $leftAttribute = isset($_POST['leftAttribute']) ? $_POST['leftAttribute'] : '';
+    $rightAttribute = isset($_POST['rightAttribute']) ? $_POST['rightAttribute'] : '';
 
     try {
         // query using prepared statements
@@ -50,6 +54,19 @@ if (isset($_POST['title']) && isset($_POST['content']) && isset($_POST['selected
             }
 
             $sql .= " FROM $content";
+
+            // Add JOIN clause if specified
+            if ($joinType !== 'none' && !empty($table) && !empty($leftAttribute) && !empty($rightAttribute)) {
+                if ($joinType === 'full outer') {
+                    $sql = "SELECT $title FROM $content LEFT JOIN $table ON $leftAttribute = $rightAttribute
+                            UNION
+                            SELECT $title FROM $content RIGHT JOIN $table ON $leftAttribute = $rightAttribute";
+                } else {
+                    $joinClause = strtoupper($joinType) . " JOIN";
+                    $sql .= " $joinClause $table ON $leftAttribute = $rightAttribute";
+                }
+            }
+
             if (isset($_POST['dynamicFromField'])) {
                 $fields = $_POST['dynamicFromField'];
                 for ($i = 0; $i < count($fields); $i++) {

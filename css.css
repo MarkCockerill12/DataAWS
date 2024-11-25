@@ -146,7 +146,7 @@ html, body {
   gap: 10px;
 }
 
-.firstParam, .secondParam, .thirdParam, .fourthParam, .fifthParam {
+.firstParam, .secondParam, .thirdParam, .fourthParam, .fifthParam, .sixthParam{
   display: flex;
   flex-direction: row;
   gap: 10px;
