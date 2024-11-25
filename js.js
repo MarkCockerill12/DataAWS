@@ -58,9 +58,6 @@ function openTab(evt, tabName) {
     const tabDescription = document.getElementById('tabDescription');
     const tabImage = document.getElementById('tabImage');
 
-    // tabTitle.style.display = 'block';
-    // tabDe.style.display = 'block';
-
     if (tabName === 'SELECT') {
         tabTitle.textContent = 'SELECT Function';
         tabDescription.textContent = 'Explanation and examples for the SELECT function.';
@@ -181,7 +178,7 @@ document.addEventListener('DOMContentLoaded', function() {
             } else if (selectedOption === 'DELETE') {
                 THEquery.style.display = 'block';
                 titleLabel.textContent = 'DELETE FROM: ';
-                contentLabel.textContent = 'you shouldnt see this lol: ';
+                contentLabel.textContent = 'WHERE: ';
                 secondParam.style.display = 'none';
                 thirdParam.style.display = 'block';
                 extraParams.style.display = 'none';
@@ -295,7 +292,6 @@ document.addEventListener('DOMContentLoaded', function() {
             newField.innerHTML = `
                 <label>,</label>
                 <input type="text" name="dynamicFromField[]" placeholder="second Field" />
-                <input type="text" name="dynamicFromValue[]" placeholder="Value" />
                 <button type="button" class="removeFieldButton">Remove</button>
             `;
             dynamicFromFields.appendChild(newField);
@@ -352,9 +348,7 @@ function showSQLQuery() {
     const dynamicTitleFieldTypes = Array.from(document.querySelectorAll('select[name="dynamicTitleFieldType[]"]')).map(select => select.value);
     const dynamicAs = Array.from(document.querySelectorAll('select[name="dynamicAs[]"]')).map(select => select.value);
     const dynamicAsValues = Array.from(document.querySelectorAll('input[name="dynamicAsValue[]"]')).map(input => input.value);
-    const dynamicFromFields = Array.from(document.querySelectorAll('input[name="dynamicFromField[]"]')).map(input => input.value);
-    const dynamicFromValues = Array.from(document.querySelectorAll('input[name="dynamicFromValue[]"]')).map(input => input.value);
-    const dynamicWhereLogics = Array.from(document.querySelectorAll('select[name="dynamicWhereLogic[]"]')).map(select => select.value);
+    const dynamicFromFields = Array.from(document.querySelectorAll('input[name="dynamicFromField[]"]')).map(input => input.value);    const dynamicWhereLogics = Array.from(document.querySelectorAll('select[name="dynamicWhereLogic[]"]')).map(select => select.value);
     const dynamicWhereFields = Array.from(document.querySelectorAll('input[name="dynamicWhereField[]"]')).map(input => input.value);
     const dynamicWhereRelations = Array.from(document.querySelectorAll('select[name="dynamicWhereRelation[]"]')).map(select => select.value);
     const dynamicWhereValues = Array.from(document.querySelectorAll('input[name="dynamicWhereValue[]"]')).map(input => input.value);

@@ -2,7 +2,7 @@
 // configuration
 $dbhost     = "172.17.0.3";
 $dbport     = "3306";
-$dbname     = "mark_db";
+$dbname     = "SteelSummit";
 $dbuser     = "root";
 $dbpass     = "pass";
 
