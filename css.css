@@ -9,166 +9,234 @@ html, body {
   box-sizing: inherit;
 }
 
-
-/* From Uiverse.io by andrew-demchenk0 */ 
+/* Form styles */
 .form {
-    width: 25%;
-    position: relative;
-    left:35%;
-    --input-focus: #2d8cf0;
-    --font-color: #323232;
-    --font-color-sub: #666;
-    --bg-color: #fff;
-    --main-color: #323232;
-    padding: 20px;
-    background: lightgrey;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
-    gap: 20px;
-    border-radius: 5px;
-    border: 2px solid var(--main-color);
-    box-shadow: 4px 4px var(--main-color);
-  }
-  
-  .title {
-    color: var(--font-color);
-    font-weight: 900;
-    font-size: 20px;
-    margin-bottom: 25px;
-  }
-  
-  .title span {
-    color: var(--font-color-sub);
-    font-weight: 600;
-    font-size: 17px;
-  }
-  
-  .input {
-    width: 250px;
-    height: 40px;
-    border-radius: 5px;
-    border: 2px solid var(--main-color);
-    background-color: var(--bg-color);
-    box-shadow: 4px 4px var(--main-color);
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--font-color);
-    padding: 5px 10px;
-    outline: none;
-  }
-  
-  .input::placeholder {
-    color: var(--font-color-sub);
-    opacity: 0.8;
-  }
-  
-  .input:focus {
-    border: 2px solid var(--input-focus);
-  }
-  
-  .login-with {
-    display: flex;
-    gap: 20px;
-  }
-  
-  .button-log {
-    cursor: pointer;
-    width: 40px;
-    height: 40px;
-    border-radius: 100%;
-    border: 2px solid var(--main-color);
-    background-color: var(--bg-color);
-    box-shadow: 4px 4px var(--main-color);
-    color: var(--font-color);
-    font-size: 25px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .icon {
-    width: 24px;
-    height: 24px;
-    fill: var(--main-color);
-  }
-  
-  .button-log:active, .button-confirm:active {
-    box-shadow: 0px 0px var(--main-color);
-    transform: translate(3px, 3px);
-  }
-  
-  .button-confirm {
-    margin: 50px auto 0 auto;
-    width: 120px;
-    height: 40px;
-    border-radius: 5px;
-    border: 2px solid var(--main-color);
-    background-color: var(--bg-color);
-    box-shadow: 4px 4px var(--main-color);
-    font-size: 17px;
-    font-weight: 600;
-    color: var(--font-color);
-    cursor: pointer;
-  }
+  width: 25%;
+  position: relative;
+  left: 35%;
+  --input-focus: #2d8cf0;
+  --font-color: #323232;
+  --font-color-sub: #666;
+  --bg-color: #fff;
+  --main-color: #323232;
+  padding: 20px;
+  background: lightgrey;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 20px;
+  border-radius: 5px;
+  border: 2px solid var(--main-color);
+  box-shadow: 4px 4px var(--main-color);
+}
+
+.title {
+  color: var(--font-color);
+  font-weight: 900;
+  font-size: 20px;
+  margin-bottom: 25px;
+}
+
+.title span {
+  color: var(--font-color-sub);
+  font-weight: 600;
+  font-size: 17px;
+}
+
+.input {
+  width: 250px;
+  height: 40px;
+  border-radius: 5px;
+  border: 2px solid var(--main-color);
+  background-color: var(--bg-color);
+  box-shadow: 4px 4px var(--main-color);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--font-color);
+  padding: 5px 10px;
+  outline: none;
+}
+
+.input::placeholder {
+  color: var(--font-color-sub);
+  opacity: 0.8;
+}
+
+.input:focus {
+  border: 2px solid var(--input-focus);
+}
+
+.login-with {
+  display: flex;
+  gap: 20px;
+}
+
+.button-log {
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  border-radius: 100%;
+  border: 2px solid var(--main-color);
+  background-color: var(--bg-color);
+  box-shadow: 4px 4px var(--main-color);
+  color: var(--font-color);
+  font-size: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.icon {
+  width: 24px;
+  height: 24px;
+  fill: var(--main-color);
+}
+
+.button-log:active, .button-confirm:active {
+  box-shadow: 0px 0px var(--main-color);
+  transform: translate(3px, 3px);
+}
+
+.button-confirm {
+  margin: 50px auto 0 auto;
+  width: 120px;
+  height: 40px;
+  border-radius: 5px;
+  border: 2px solid var(--main-color);
+  background-color: var(--bg-color);
+  box-shadow: 4px 4px var(--main-color);
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--font-color);
+  cursor: pointer;
+}
 
 
-  
-  /* From Uiverse.io by kennyotsu-monochromia */
-  .container {
-    padding: 50px; 
-    width: 100%;
-    height: 100%;
-    --color: #E1E1E1;
-    background-color: #F3F3F3;
-    background-image: linear-gradient(0deg, transparent 24%, var(--color) 25%, var(--color) 26%, transparent 27%,transparent 74%, var(--color) 75%, var(--color) 76%, transparent 77%,transparent),
-        linear-gradient(90deg, transparent 24%, var(--color) 25%, var(--color) 26%, transparent 27%,transparent 74%, var(--color) 75%, var(--color) 76%, transparent 77%,transparent);
-    background-size: 55px 55px;
+
+
+@media screen and (max-width: 768px) {
+  .modal-content {
+      width: 95%;
+      margin: 5% auto;
   }
   
+  .firstParam, .secondParam, .thirdParam {
+      flex-direction: column;
+      gap: 5px;
+  }
+}
+
+
+/* Container styles */
+.container {
+  padding: 50px; 
+  width: 100%;
+  height: 100%;
+  --color: #E1E1E1;
+  background-color: #F3F3F3;
+  background-image: linear-gradient(0deg, transparent 24%, var(--color) 25%, var(--color) 26%, transparent 27%,transparent 74%, var(--color) 75%, var(--color) 76%, transparent 77%,transparent),
+      linear-gradient(90deg, transparent 24%, var(--color) 25%, var(--color) 26%, transparent 27%,transparent 74%, var(--color) 75%, var(--color) 76%, transparent 77%,transparent);
+  background-size: 55px 55px;
+}
+
 .extraParam {
   display: flex;
   flex-direction: row;
   gap: 10px;
 }
 
-.firstParam {
-  display: flex;
-  flex-direction:row;
-  gap: 10px; 
-}
-
-.secondParam {
+.firstParam, .secondParam, .thirdParam, .fourthParam, .fifthParam {
   display: flex;
   flex-direction: row;
   gap: 10px;
+  align-items: center; /* Align items in the center */
 }
 
-.thirdParam {
+.inline-field {
   display: flex;
-  flex-direction:row;
-  gap: 10px; 
+  flex-direction: row;
+  gap: 10px;
+  align-items: center; /* Align items in the center */
 }
 
-.fourthParam {
+
+
+
+/* Modal window styles */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5); /* Black background with opacity */
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  max-height: 80%;
+  overflow-y: auto;
+  border-radius: 10px;
+}
+
+
+
+.close-button {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close-button:hover,
+.close-button:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.navbar {
   display: flex;
-  flex-direction:row;
-  gap: 10px; 
+  justify-content: space-around;
+  margin-bottom: 20px;
 }
 
-.fifthParam {
-  display: flex;
-  flex-direction:row;
-  gap: 10px; 
+.tablink {
+  background-color: #555;
+  color: white;
+  padding: 14px 20px;
+  cursor: pointer;
+  border: none;
+  outline: none;
 }
 
-  
+.tablink:hover {
+  background-color: #777;
+}
 
-/* From Uiverse.io by 3bdel3ziz-T */ 
+.tabcontent {
+  display: none;
+}
+
+.tabcontent img {
+  max-width: 100%;
+  height: auto;
+}
+
+
+
+
+/* Dropdown menu styles */
 .select {
   width: fit-content;
-  /* margin:10px; */
   cursor: pointer;
   position: relative;
   transition: 300ms;
@@ -229,6 +297,7 @@ html, body {
   width: 150px;
   font-size: 15px;
 }
+
 .option:hover {
   background-color: #323741;
 }
@@ -240,6 +309,7 @@ html, body {
 .options label {
   display: inline-block;
 }
+
 .options label::before {
   content: attr(data-txt);
 }
@@ -255,15 +325,19 @@ html, body {
 .select:has(.options input[type="radio"]#all:checked) .selected::before {
   content: attr(data-default);
 }
+
 .select:has(.options input[type="radio"]#option-1:checked) .selected::before {
   content: attr(data-one);
 }
+
 .select:has(.options input[type="radio"]#option-2:checked) .selected::before {
   content: attr(data-two);
 }
+
 .select:has(.options input[type="radio"]#option-3:checked) .selected::before {
   content: attr(data-three);
 }
+
 .select:has(.options input[type="radio"]#option-4:checked) .selected::before {
   content: attr(data-four);
 }

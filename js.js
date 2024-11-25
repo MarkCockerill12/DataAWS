@@ -1,41 +1,100 @@
-// this updates the variable for whatever query type you select
-function loginButton() {
-    console.log("loginButton");
-    var username = document.getElementById("username").value;
-    var password = document.getElementById("password").value;
-    if (username == "" || password == "") {
-        alert("Please enter username and password");
-        return;
-    }
-    else if (password == "pass") {
-        if (username == "Customer") {
-            window.location.href = "Customer.html";
-        }
-        else if (username == "Staff") {
-            window.location.href = "Staff.html";
-        }
-        else if (username == "Manager") {
-            window.location.href = "Manager.html";
-        }
-        else if (username == "CEO") {
-            window.location.href = "CEO.html";
-        }
-        else if (username == "kermit" || password == "kermit") {
-            alert("bruh what? Kermit? Are you actually kidding me? no thats it im literally taking away your privileges");
-            alert("redirecting to youareanidiot.com");
-            alert("jk");
-        }   
-    }
-    else {
-        alert("Invalid username or password");
-        window.location.href = "image.jpg";
-    }
+console.log("js.js script loaded");
 
-    console.log(username);
+// Define global functions first
+function showHelpModal() {
+    console.log("showHelpModal called");
+    const helpModal = document.getElementById('helpModal');
+    if (helpModal) {
+        helpModal.style.display = 'block';
+    }
 }
 
-// this updates the variable for whatever query type you select
+function hideHelpModal() {
+    const helpModal = document.getElementById('helpModal');
+    if (helpModal) {
+        helpModal.style.display = 'none';
+    }
+}
+
+function openTab(evt, tabName) {
+    const tabTitle = document.getElementById('tabTitle');
+    const tabDescription = document.getElementById('tabDescription');
+    const tabImage = document.getElementById('tabImage');
+
+    tabTitle.style.display = 'block';
+    tabDescription.style.display = 'block';
+    tabImage.style.display = 'block';
+
+    if (tabName === 'SELECT') {
+        tabTitle.textContent = 'SELECT Function';
+        tabDescription.textContent = 'Explanation and examples for the SELECT function.';
+        tabImage.src = 'select_example.png';
+        tabImage.alt = 'SELECT Example';
+    } else if (tabName === 'INSERT') {
+        tabTitle.textContent = 'INSERT Function';
+        tabDescription.textContent = 'Explanation and examples for the INSERT function.';
+        tabImage.src = 'insert_example.png';
+        tabImage.alt = 'INSERT Example';
+    } else if (tabName === 'UPDATE') {
+        tabTitle.textContent = 'UPDATE Function';
+        tabDescription.textContent = 'Explanation and examples for the UPDATE function.';
+        tabImage.src = 'update_example.png';
+        tabImage.alt = 'UPDATE Example';
+    } else if (tabName === 'DELETE') {
+        tabTitle.textContent = 'DELETE Function';
+        tabDescription.textContent = 'Explanation and examples for the DELETE function.';
+        tabImage.src = 'delete_example.png';
+        tabImage.alt = 'DELETE Example';
+    }
+
+    const tablinks = document.querySelectorAll('.tablink');
+    tablinks.forEach(link => {
+        link.className = link.className.replace(' active', '');
+    });
+
+    evt.currentTarget.className += ' active';
+}
+
+// Single DOMContentLoaded event listener
 document.addEventListener('DOMContentLoaded', function() {
+    console.log("DOM fully loaded");
+
+    // Add help button event listener
+    const helpButton = document.getElementById('helpButton');
+    if (helpButton) {
+        helpButton.addEventListener('click', showHelpModal);
+        console.log("Help button event listener added");
+    } else {
+        console.log("Help button not found");
+    }
+
+    // Add close button event listener
+    const closeButton = document.querySelector('.close-button');
+    if (closeButton) {
+        closeButton.addEventListener('click', hideHelpModal);
+        console.log("Close button event listener added");
+    } else {
+        console.log("Close button not found");
+    }
+
+    // Add window click event listener
+    window.addEventListener('click', function(event) {
+        const helpModal = document.getElementById('helpModal');
+        if (event.target == helpModal) {
+            hideHelpModal();
+        }
+    });
+    console.log("Window click event listener added");
+
+    const tablinks = document.querySelectorAll('.tablink');
+    tablinks.forEach(tablink => {
+        tablink.addEventListener('click', function(event) {
+            openTab(event, this.textContent.toUpperCase());
+        });
+    });
+    console.log("Tab link event listeners added");
+
+    // Update the variable for whatever query type you select
     document.querySelectorAll('.options input[type="radio"]').forEach(radio => {
         radio.addEventListener('change', function() {
             const selectedOption = this.nextElementSibling.getAttribute('data-txt');
@@ -46,13 +105,23 @@ document.addEventListener('DOMContentLoaded', function() {
             const THEquery = document.querySelector('.THEquery');
             const extraParams = document.getElementById('extraParams');
             const orderByFieldType = document.getElementById('orderByFieldType');
-            const secondParam = document.getElementById('secondParam');
-            const thirdParam = document.getElementById('thirdParam');
+            const secondParam = document.querySelector('.secondParam');
+            const thirdParam = document.querySelector('.thirdParam');
+            const whereLabel = document.getElementById('whereLabel');
+
+            // Clear all input fields
+            document.querySelectorAll('input[type="text"], select').forEach(input => {
+                input.value = '';
+                if (input.tagName === 'SELECT') {
+                    input.selectedIndex = 0;
+                }
+            });
 
             if (selectedOption === 'SELECT') {
                 THEquery.style.display = 'block';
                 titleLabel.textContent = 'SELECT: ';
                 contentLabel.textContent = 'FROM: ';
+                whereLabel.textContent = 'WHERE:';
                 secondParam.style.display = 'block';
                 thirdParam.style.display = 'block';
                 extraParams.style.display = 'block';
@@ -61,6 +130,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 THEquery.style.display = 'block';
                 titleLabel.textContent = 'INSERT INTO: ';
                 contentLabel.textContent = 'VALUES: ';
+                whereLabel.textContent = 'you shouldnt see this lol';
                 secondParam.style.display = 'block';
                 thirdParam.style.display = 'none';
                 extraParams.style.display = 'none';
@@ -68,6 +138,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 THEquery.style.display = 'block';
                 titleLabel.textContent = 'UPDATE: ';
                 contentLabel.textContent = 'SET: ';
+                whereLabel.textContent = 'WHERE:';
                 secondParam.style.display = 'block';
                 thirdParam.style.display = 'block';
                 extraParams.style.display = 'none';
@@ -187,7 +258,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const newField = document.createElement('div');
             newField.innerHTML = `
                 <label>,</label>
-                <input type="text" name="dynamicFromField[]" placeholder="From Field" />
+                <input type="text" name="dynamicFromField[]" placeholder="second Field" />
+                <input type="text" name="dynamicFromValue[]" placeholder="Value" />
                 <button type="button" class="removeFieldButton">Remove</button>
             `;
             dynamicFromFields.appendChild(newField);
@@ -245,6 +317,7 @@ function showSQLQuery() {
     const dynamicAs = Array.from(document.querySelectorAll('select[name="dynamicAs[]"]')).map(select => select.value);
     const dynamicAsValues = Array.from(document.querySelectorAll('input[name="dynamicAsValue[]"]')).map(input => input.value);
     const dynamicFromFields = Array.from(document.querySelectorAll('input[name="dynamicFromField[]"]')).map(input => input.value);
+    const dynamicFromValues = Array.from(document.querySelectorAll('input[name="dynamicFromValue[]"]')).map(input => input.value);
     const dynamicWhereLogics = Array.from(document.querySelectorAll('select[name="dynamicWhereLogic[]"]')).map(select => select.value);
     const dynamicWhereFields = Array.from(document.querySelectorAll('input[name="dynamicWhereField[]"]')).map(input => input.value);
     const dynamicWhereRelations = Array.from(document.querySelectorAll('select[name="dynamicWhereRelation[]"]')).map(select => select.value);
@@ -283,13 +356,34 @@ function showSQLQuery() {
             sql += ` ORDER BY ${orderByFieldType !== 'none' ? `${orderByFieldType.toUpperCase()}(${orderByValue})` : orderByValue} ${orderBy.toUpperCase()}`;
         }
     } else if (selectedOption === 'INSERT') {
-        sql = `INSERT INTO ${title} (${content}) VALUES (${whereField})`;
+        const columns = [whereField, ...dynamicFromFields].join(',');
+        const values = content.split(',').map(value => `'${value.trim()}'`).join(',');
+        sql = `INSERT INTO ${title} (${columns}) VALUES (${values})`;
     } else if (selectedOption === 'UPDATE') {
-        sql = `UPDATE ${title} SET ${content} = '${whereField}'`;
+        sql = `UPDATE ${title} SET ${content}`;
+        dynamicFromFields.forEach((field, index) => {
+            sql += `, ${field} = '${dynamicFromValues[index]}'`;
+        });
+        sql += ` WHERE ${whereField} ${whereRelation} '${whereValue}'`;
+        dynamicWhereFields.forEach((field, index) => {
+            sql += ` ${dynamicWhereLogics[index]} ${field} ${dynamicWhereRelations[index]} '${dynamicWhereRelations[index] === 'LIKE' ? `%${dynamicWhereValues[index]}%` : dynamicWhereValues[index]}'`;
+        });
     } else if (selectedOption === 'DELETE') {
-        sql = `DELETE FROM ${title} WHERE ${content} = '${whereField}'`;
+        sql = `DELETE FROM ${title} WHERE ${whereField} ${whereRelation} '${whereValue}'`;
+        dynamicWhereFields.forEach((field, index) => {
+            sql += ` ${dynamicWhereLogics[index]} ${field} ${dynamicWhereRelations[index]} '${dynamicWhereRelations[index] === 'LIKE' ? `%${dynamicWhereValues[index]}%` : dynamicWhereValues[index]}'`;
+        });
     }
 
-    alert(sql);
+    // Display the SQL command with the actual values
+    let displaySql = sql;
+    if (selectedOption === 'INSERT') {
+        const valuesArray = content.split(',').map(value => value.trim());
+        valuesArray.forEach(value => {
+            displaySql = displaySql.replace('?', `'${value}'`);
+        });
+    }
+
+    alert(displaySql);
     return true;
 }

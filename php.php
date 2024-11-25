@@ -48,8 +48,16 @@ if (isset($_POST['title']) && isset($_POST['content']) && isset($_POST['selected
                     }
                 }
             }
+
             $sql .= " FROM $content";
+            if (isset($_POST['dynamicFromField'])) {
+                $fields = $_POST['dynamicFromField'];
+                for ($i = 0; $i < count($fields); $i++) {
+                    $sql .= ", " . $fields[$i];
+                }
+            }
             $params = [];
+
             if (!empty($whereField)) {
                 $sql .= " WHERE $whereField $whereRelation :whereValue";
                 $params[':whereValue'] = $whereRelation === 'LIKE' ? "%$whereValue%" : $whereValue;
@@ -91,36 +99,94 @@ if (isset($_POST['title']) && isset($_POST['content']) && isset($_POST['selected
                 echo "<br>";
             }
 
-
-
         } elseif ($selectedOption == "INSERT") {
-            $columns = explode(',', $content);
-            $placeholders = implode(',', array_map(function($col) { return ':' . trim($col); }, $columns));
-            $sql = "INSERT INTO $title (" . implode(',', $columns) . ") VALUES ($placeholders)";
+            // Separate table name and columns
+            preg_match('/^(\w+)\s*\((.*)\)$/', $title, $matches);
+            $tableName = $matches[1];
+            $columns = array_map('trim', explode(',', $matches[2]));
+        
+            $values = array_map(function($value) {
+                return $value !== null ? trim($value, " '") : '';
+            }, explode(',', $content));
+            $placeholders = implode(',', array_fill(0, count($values), '?'));
+            $sql = "INSERT INTO $tableName (" . implode(',', $columns) . ") VALUES ($placeholders)";
+            // Display the SQL command with the actual values
+            $displaySql = $sql;
+            foreach ($values as $key => $value) {
+                $displaySql = preg_replace('/\?/', "'$value'", $displaySql, 1);
+            }
             echo "<button onclick='history.back()'>Go Back</button>";
-            echo "<p>SQL Command: $sql</p>";
-            $params = array_combine(array_map(function($col) { return ':' . trim($col); }, $columns), array_map(function($col) { return $_POST[trim($col)]; }, $columns));
+            echo "<p>SQL Command: $displaySql</p>";
             $q = $conn->prepare($sql);
-            $q->execute($params);
+            $q->execute($values);
             echo "Record inserted successfully.";
 
-
-
-
         } elseif ($selectedOption == "DELETE") {
-            $sql = "DELETE FROM $title WHERE $content = :content";
+            $sql = "DELETE FROM $title WHERE $whereField $whereRelation :whereValue";
+            $params = [':whereValue' => $whereValue];
+            if (isset($_POST['dynamicWhereField']) && isset($_POST['dynamicWhereValue']) && isset($_POST['dynamicWhereRelation']) && isset($_POST['dynamicWhereLogic'])) {
+                $fields = $_POST['dynamicWhereField'];
+                $values = $_POST['dynamicWhereValue'];
+                $relations = $_POST['dynamicWhereRelation'];
+                $logics = $_POST['dynamicWhereLogic'];
+                $conditions = [];
+                for ($i = 0; $i < count($fields); $i++) {
+                    $conditions[] = $logics[$i] . " " . $fields[$i] . " " . $relations[$i] . " :" . $fields[$i];
+                    $params[":" . $fields[$i]] = $relations[$i] === 'LIKE' ? "%{$values[$i]}%" : $values[$i];
+                }
+                if (!empty($conditions)) {
+                    $sql .= " " . implode(" ", $conditions);
+                }
+            }
+            // Display the SQL command with the actual values
+            $displaySql = $sql;
+            foreach ($params as $key => $value) {
+                $displaySql = str_replace($key, "'$value'", $displaySql);
+            }
             echo "<button onclick='history.back()'>Go Back</button>";
-            echo "<p>SQL Command: $sql</p>";
+            echo "<p>SQL Command: $displaySql</p>";
             $q = $conn->prepare($sql);
-            $q->execute(array(':content' => $content));
+            $q->execute($params);
             echo "Record deleted successfully.";
 
         } elseif ($selectedOption == "UPDATE") {
-            $sql = "UPDATE $title SET $content = :content";
+            // Retrieve dynamic fields for the SET clause
+            $sql = "UPDATE $title";
+
+            $sql .= " SET $content";
+            if (isset($_POST['dynamicFromField'])) {
+                $fields = $_POST['dynamicFromField'];
+                for ($i = 0; $i < count($fields); $i++) {
+                    $sql .= ", " . $fields[$i];
+                }
+            }
+            $sql .= " WHERE $whereField $whereRelation :whereValue";
+            $params[':whereValue'] = $whereRelation === 'LIKE' ? "%$whereValue%" : $whereValue;
+
+            if (isset($_POST['dynamicWhereField']) && isset($_POST['dynamicWhereValue']) && isset($_POST['dynamicWhereRelation']) && isset($_POST['dynamicWhereLogic'])) {
+                $fields = $_POST['dynamicWhereField'];
+                $values = $_POST['dynamicWhereValue'];
+                $relations = $_POST['dynamicWhereRelation'];
+                $logics = $_POST['dynamicWhereLogic'];
+                $conditions = [];
+                for ($i = 0; $i < count($fields); $i++) {
+                    $conditions[] = $logics[$i] . " " . $fields[$i] . " " . $relations[$i] . " :" . $fields[$i];
+                    $params[":" . $fields[$i]] = $relations[$i] === 'LIKE' ? "%{$values[$i]}%" : $values[$i];
+                }
+                if (!empty($conditions)) {
+                    $sql .= " " . implode(" ", $conditions);
+                }
+            }
+
+            // Display the SQL command with the actual values
+            $displaySql = $sql;
+            foreach ($params as $key => $value) {
+                $displaySql = str_replace($key, "'$value'", $displaySql);
+            }
             echo "<button onclick='history.back()'>Go Back</button>";
-            echo "<p>SQL Command: $sql</p>";
+            echo "<p>SQL Command: $displaySql</p>";
             $q = $conn->prepare($sql);
-            $q->execute(array(':content' => $content));
+            $q->execute($params);
             echo "Record updated successfully.";
 
         } else {
