@@ -122,11 +122,41 @@ if (isset($_POST['title']) && isset($_POST['content']) && isset($_POST['selected
             $tableName = $matches[1];
             $columns = array_map('trim', explode(',', $matches[2]));
         
-            $values = array_map(function($value) {
-                return $value !== null ? trim($value, " '") : '';
-            }, explode(',', $content));
+            // Handle values correctly, considering potential commas within strings
+            $values = [];
+            $inQuotes = false;
+            $currentValue = '';
+            for ($i = 0; $i < strlen($content); $i++) {
+                $char = $content[$i];
+                if ($char == "'" && ($i == 0 || $content[$i - 1] != '\\')) {
+                    $inQuotes = !$inQuotes;
+                }
+                if ($char == ',' && !$inQuotes) {
+                    $values[] = trim($currentValue, " '");
+                    $currentValue = '';
+                } else {
+                    $currentValue .= $char;
+                }
+            }
+            $values[] = trim($currentValue, " '");
+        
+            // Handle dynamic fields
+            if (isset($_POST['dynamicFromField'])) {
+                $fields = $_POST['dynamicFromField'];
+                for ($i = 0; $i < count($fields); $i++) {
+                    $values[] = $fields[$i]; // Use the field value directly
+                }
+            }
+        
+            // Ensure the values array matches the columns array in length
+            if (count($columns) !== count($values)) {
+                echo "Error: Column count does not match value count.";
+                exit;
+            }
+        
             $placeholders = implode(',', array_fill(0, count($values), '?'));
             $sql = "INSERT INTO $tableName (" . implode(',', $columns) . ") VALUES ($placeholders)";
+            
             // Display the SQL command with the actual values
             $displaySql = $sql;
             foreach ($values as $key => $value) {
