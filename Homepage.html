@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SteelSummit - Home</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
+  
+  <style>
+    .carousel-inner img {
+      width: 100%;
+      height: 100%;
+    }
+    .product-card img {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#" >
+        <img src="https://img.icons8.com/ios/452/mountain.png" alt="" width="30" height="24" class="d-inline-block align-text-top"> 
+        SteelSummit
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Shop</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">About Us</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Contact</a>
+          </li>
+          <li>
+            <a class="nav-link" href="#">Login</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Carousel Section -->
+  <div id="carouselExampleAutoplaying" class="carousel slide carousel-fade" data-bs-ride="carousel">
+    <div class="carousel-inner">
+      <div class="carousel-item active position-relative text-center">
+        <img src="https://www.bike-discount.de/media/image/fa/5a/9a/645138_mountainbikes_hardtail29.jpg" class="d-block w-100" alt="Bike Image 1">
+        <h1 class="text-white position-absolute top-50 start-50 translate-middle">Bikes At Steel Summit</h1>
+      </div>
+      <div class="carousel-item">
+        <img src="https://static.raffall.com/users/cover_image/1827622/202303081509531591484486408a541589fc9.52372120.png" class="d-block w-100" alt="Bike Image 2">
+        <h1 class="text-white position-absolute top-50 start-50 translate-middle">Ride Free</h1>
+      </div>
+      <div class="carousel-item">
+        <img src="https://m.media-amazon.com/images/S/al-eu-726f4d26-7fdb/104f83f2-4c7a-4262-8bfa-b0b16ba5f713._CR0%2C0%2C1920%2C640_SX1500_.jpg" class="d-block w-100" alt="Bike Image 3">
+        <h1 class="text-white position-absolute top-50 start-50 translate-middle">Adventure Awaits</h1>
+      </div>
+    </div>
+  </div>
+
+  <!-- Products Section -->
+  <div class="container my-5">
+    <h2 class="text-center mb-4">Featured Products</h2>
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+      <!-- Product Card 1 -->
+      <div class="col">
+        <div class="card product-card">
+          <img src="https://m.media-amazon.com/images/I/71kWA4ndbkL.jpg" class="card-img-top" alt="Mountain Bike">
+          <div class="card-body">
+            <h5 class="card-title">Mountain Bike</h5>
+            <p class="card-text">Durable mountain bike for all your outdoor adventures.</p>
+            <a href="#" class="btn btn-primary">Buy Now</a>
+          </div>
+        </div>
+      </div>
+      <!-- Product Card 2 -->
+      <div class="col">
+        <div class="card product-card">
+          <img src="https://via.placeholder.com/400x250.png?text=Road+Bike" class="card-img-top" alt="Road Bike">
+          <div class="card-body">
+            <h5 class="card-title">Road Bike</h5>
+            <p class="card-text">Sleek road bike for fast rides on smooth pavement.</p>
+            <a href="#" class="btn btn-primary">Buy Now</a>
+          </div>
+        </div>
+      </div>
+      <!-- Product Card 3 -->
+      <div class="col">
+        <div class="card product-card">
+          <img src="https://via.placeholder.com/400x250.png?text=Bike+Helmet" class="card-img-top" alt="Bike Helmet">
+          <div class="card-body">
+            <h5 class="card-title">Bike Helmet</h5>
+            <p class="card-text">Protective helmet for a safe and comfortable ride.</p>
+            <a href="#" class="btn btn-primary">Buy Now</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-dark text-white text-center py-4">
+    <p>&copy; 2024 SteelSummit. All rights reserved.</p>
+    <p>
+      <a href="#" class="text-white me-3">Privacy Policy</a> | 
+      <a href="#" class="text-white ms-3">Terms of Service</a>
+    </p>
+  </footer>
+
+  <!-- Bootstrap JS and Popper.js (CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+
+</body>
+</html>
