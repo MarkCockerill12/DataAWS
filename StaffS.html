@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>CEO</title>
-    <link rel="stylesheet" href="css.css"/>
+    <title>Staff Shop</title>
+    <link rel="stylesheet" href="userType.css"/>
     <script src="js.js" defer></script>
 </head>
 <body>
@@ -17,14 +17,11 @@
             <span class="close-button">&times;</span>
             <div class="navbar">
                 <button class="tablink" onclick="openTab(event, 'SELECT')">SELECT</button>
-                <button class="tablink" onclick="openTab(event, 'INSERT')">INSERT</button>
-                <button class="tablink" onclick="openTab(event, 'UPDATE')">UPDATE</button>
-                <button class="tablink" onclick="openTab(event, 'DELETE')">DELETE</button>
             </div>
             <div id="tabContent" class="tabcontent" style="display: block;">
-                <h2 id="tabTitle">SELECT Function</h2>
-                <p id="tabDescription">Explanation and examples for the SELECT function.</p>
-                <img id="tabImage" src="select_example.png" alt="SELECT Example">
+                <h2 id="tabTitle"></h2>
+                <p id="tabDescription"></p>
+                <!-- <img id="tabImage" src="select_example.png" alt="SELECT Example"> -->
             </div>
         </div>
     </div>
@@ -75,11 +72,12 @@
         <br>
 
         <div class="secondParam">
-          <label id="contentLabel">FROM:</label>
-          <input name="content" required id="content" />
-          <div id="dynamicFromFields"></div>
-          <button type="button" id="addFromFieldButton">Add FROM</button>
-        </div>
+            <label id="contentLabel">FROM: </label>
+            <select name="content" required id="content">
+              <option value="ShopStaffSchedule_view">Staff Schedule</option>
+              <option value="ShopStockStaff_view">Stock</option>
+            </select>
+          </div>
 
         <br>
 
@@ -89,6 +87,9 @@
           <select name="whereRelation" id="whereRelation">
             <option value="=">=</option>
             <option value="LIKE">LIKE</option>
+            <option value="<"><</option>
+            <option value=">">></option>
+            <option value="NOT">NOT</option>
           </select>
           <input name="whereValue" id="whereValue" placeholder="Value" />
           <div id="dynamicWhereFields"></div>
@@ -125,6 +126,22 @@
               <option value="desc">DESC</option>
             </select>
           </div>
+
+          <br>
+          <div class="sixthParam">
+            <label>JOIN:</label>
+            <select name="joinType" id="joinType">
+              <option value="none">None</option>
+              <option value="inner">INNER JOIN</option>
+              <option value="left">LEFT JOIN</option>
+              <option value="right">RIGHT JOIN</option>
+              <option value="full outer">FULL JOIN</option>
+            </select>
+            <input type="text" name="Table" id="Table" style="display: none;" placeholder="Table" />
+            <input type="text" name="leftAttribute" id="leftAttribute" style="display: none;" placeholder="Left Attribute" />
+            <input type="text" name="rightAttribute" id="rightAttribute" style="display: none;" placeholder="Right Attribute" />
+          </div>
+
         </div>
         <br>
         <input type="hidden" name="selectedOption" id="selectedOption" value="Choose Query" />

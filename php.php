@@ -78,6 +78,9 @@ if (isset($_POST['title']) && isset($_POST['content']) && isset($_POST['selected
             if (!empty($whereField)) {
                 $sql .= " WHERE $whereField $whereRelation :whereValue";
                 $params[':whereValue'] = $whereRelation === 'LIKE' ? "%$whereValue%" : $whereValue;
+                if ($whereRelation === 'NOT') {
+                    $sql = str_replace("$whereField NOT :whereValue", "$whereField != :whereValue", $sql);
+                }
             }
             if (isset($_POST['dynamicWhereField']) && isset($_POST['dynamicWhereValue']) && isset($_POST['dynamicWhereRelation']) && isset($_POST['dynamicWhereLogic'])) {
                 $fields = $_POST['dynamicWhereField'];
@@ -86,7 +89,11 @@ if (isset($_POST['title']) && isset($_POST['content']) && isset($_POST['selected
                 $logics = $_POST['dynamicWhereLogic'];
                 $conditions = [];
                 for ($i = 0; $i < count($fields); $i++) {
-                    $conditions[] = $logics[$i] . " " . $fields[$i] . " " . $relations[$i] . " :" . $fields[$i];
+                    $condition = $logics[$i] . " " . $fields[$i] . " " . $relations[$i] . " :" . $fields[$i];
+                    if ($relations[$i] === 'NOT') {
+                        $condition = str_replace("$fields[$i] NOT :" . $fields[$i], "$fields[$i] != :" . $fields[$i], $condition);
+                    }
+                    $conditions[] = $condition;
                     $params[":" . $fields[$i]] = $relations[$i] === 'LIKE' ? "%{$values[$i]}%" : $values[$i];
                 }
                 if (!empty($conditions)) {
@@ -171,6 +178,9 @@ if (isset($_POST['title']) && isset($_POST['content']) && isset($_POST['selected
         } elseif ($selectedOption == "DELETE") {
             $sql = "DELETE FROM $title WHERE $whereField $whereRelation :whereValue";
             $params = [':whereValue' => $whereValue];
+            if ($whereRelation === 'NOT') {
+                $sql = str_replace("$whereField NOT :whereValue", "$whereField != :whereValue", $sql);
+            }
             if (isset($_POST['dynamicWhereField']) && isset($_POST['dynamicWhereValue']) && isset($_POST['dynamicWhereRelation']) && isset($_POST['dynamicWhereLogic'])) {
                 $fields = $_POST['dynamicWhereField'];
                 $values = $_POST['dynamicWhereValue'];
@@ -178,7 +188,11 @@ if (isset($_POST['title']) && isset($_POST['content']) && isset($_POST['selected
                 $logics = $_POST['dynamicWhereLogic'];
                 $conditions = [];
                 for ($i = 0; $i < count($fields); $i++) {
-                    $conditions[] = $logics[$i] . " " . $fields[$i] . " " . $relations[$i] . " :" . $fields[$i];
+                    $condition = $logics[$i] . " " . $fields[$i] . " " . $relations[$i] . " :" . $fields[$i];
+                    if ($relations[$i] === 'NOT') {
+                        $condition = str_replace("$fields[$i] NOT :" . $fields[$i], "$fields[$i] != :" . $fields[$i], $condition);
+                    }
+                    $conditions[] = $condition;
                     $params[":" . $fields[$i]] = $relations[$i] === 'LIKE' ? "%{$values[$i]}%" : $values[$i];
                 }
                 if (!empty($conditions)) {
@@ -209,6 +223,9 @@ if (isset($_POST['title']) && isset($_POST['content']) && isset($_POST['selected
             }
             $sql .= " WHERE $whereField $whereRelation :whereValue";
             $params[':whereValue'] = $whereRelation === 'LIKE' ? "%$whereValue%" : $whereValue;
+            if ($whereRelation === 'NOT') {
+                $sql = str_replace("$whereField NOT :whereValue", "$whereField != :whereValue", $sql);
+            }
 
             if (isset($_POST['dynamicWhereField']) && isset($_POST['dynamicWhereValue']) && isset($_POST['dynamicWhereRelation']) && isset($_POST['dynamicWhereLogic'])) {
                 $fields = $_POST['dynamicWhereField'];
@@ -217,7 +234,11 @@ if (isset($_POST['title']) && isset($_POST['content']) && isset($_POST['selected
                 $logics = $_POST['dynamicWhereLogic'];
                 $conditions = [];
                 for ($i = 0; $i < count($fields); $i++) {
-                    $conditions[] = $logics[$i] . " " . $fields[$i] . " " . $relations[$i] . " :" . $fields[$i];
+                    $condition = $logics[$i] . " " . $fields[$i] . " " . $relations[$i] . " :" . $fields[$i];
+                    if ($relations[$i] === 'NOT') {
+                        $condition = str_replace("$fields[$i] NOT :" . $fields[$i], "$fields[$i] != :" . $fields[$i], $condition);
+                    }
+                    $conditions[] = $condition;
                     $params[":" . $fields[$i]] = $relations[$i] === 'LIKE' ? "%{$values[$i]}%" : $values[$i];
                 }
                 if (!empty($conditions)) {

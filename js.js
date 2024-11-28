@@ -166,7 +166,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 THEquery.style.display = 'block';
                 titleLabel.textContent = 'INSERT INTO: ';
                 contentLabel.textContent = 'VALUES: ';
-                whereLabel.textContent = 'you shouldnt see this lol';
+                whereLabel.textContent = 'WHERE:';
                 secondParam.style.display = 'block';
                 thirdParam.style.display = 'none';
                 extraParams.style.display = 'none';
@@ -181,9 +181,9 @@ document.addEventListener('DOMContentLoaded', function() {
             } else if (selectedOption === 'DELETE') {
                 THEquery.style.display = 'block';
                 titleLabel.textContent = 'DELETE FROM: ';
-                contentLabel.textContent = 'WHERE: ';
                 secondParam.style.display = 'none';
                 thirdParam.style.display = 'block';
+                whereLabel.textContent = 'WHERE:';
                 extraParams.style.display = 'none';
             } else {
                 THEquery.style.display = 'none';
@@ -340,6 +340,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 <select name="dynamicWhereRelation[]">
                     <option value="=">=</option>
                     <option value="LIKE">LIKE</option>
+                    <option value="<"><</option>
+                    <option value=">">></option>
+                    <option value="NOT">NOT</option>
                 </select>
                 <input type="text" name="dynamicWhereValue[]" placeholder="Value" />
                 <button type="button" class="removeFieldButton">Remove</button>
