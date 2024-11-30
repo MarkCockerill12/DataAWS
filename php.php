@@ -14,6 +14,20 @@ try {
     die("Connection failed: " . $e->getMessage());
 }
 
+// Fetch table data as JSON
+if (isset($_GET['table'])) {
+    $table = $_GET['table'];
+    try {
+        $stmt = $conn->prepare("SELECT * FROM $table");
+        $stmt->execute();
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        echo json_encode($result);
+    } catch (PDOException $e) {
+        echo json_encode(['error' => $e->getMessage()]);
+    }
+    exit;
+}
+
 // form was submitted
 if (isset($_POST['title']) && isset($_POST['content']) && isset($_POST['selectedOption'])) {
     $title = $_POST['title'];
