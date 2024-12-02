@@ -20,7 +20,6 @@
 <body>
   <div class="container">
     <!-- Navbar -->
-
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
       <div class="container-fluid">
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,13 +36,18 @@
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">HTML Tables</a>
               <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">IDK</a></li>
-                <li><a class="dropdown-item" href="#">Another action</a></li>
+                <li><a class="dropdown-item" onclick="showTable('Stock')">Stock</a></li>
+                <li><a class="dropdown-item" onclick="showTable('TimeTable')">Timetable</a></li>
                 <li><hr class="dropdown-divider"></li>
                 <li><a class="dropdown-item" href="#">Something else here</a></li>
               </ul>
             </li>
           </ul>
+          <span class="navbar-text">
+            HTML TABLE:
+          </span>
+          <span class="navbar-text" id="displayStaffID"> </span>
+          <button class="btn btn-danger" id="logoutButton">Logout</button>
         </div>
       </div>
     </nav>
@@ -78,7 +82,6 @@
               </div>
           </div>
       </div>
-
     <!-- Form for SQL Query Builder -->
     <form name="frmContact" class="needs-validation" method="post" action="php.php">
       <!-- Dropdown menu to select the query type -->
@@ -129,10 +132,12 @@
         <br>
 
         <div class="secondParam">
-          <label id="contentLabel">FROM: hardcode</label>
-          <input name="content" required id="content" />
-          <div id="dynamicFromFields"></div>
-          <button type="button" id="addFromFieldButton">Add FROM</button>
+          <label id="contentLabel">FROM: </label>
+          <select name="content" required id="content">
+            <option value="Staff">Staff Schedule</option>
+            <!-- ManufactorStaffSchedule_view -->
+            <option value="ManufactorStockStaff_view">Stock</option>
+          </select>
         </div>
 
         <br>
@@ -201,9 +206,16 @@
         </div>
         <br>
         <input type="hidden" name="selectedOption" id="selectedOption" value="Choose Query" />
-        <button class="button" type="submit" title="Confirm" onclick="showSQLQuery()" id="confirmButton">Confirm</button>
+        <button class="button" type="submit" title="Confirm" id="confirmButton">Confirm</button>
       </div>
     </form>
+  </div>
+
+  <!-- Database Table View -->
+  <div id="databaseTableView" class="hidden">
+    <h2>Database Table</h2>
+    <div id="tableContainer"></div>
+    <button class="btn btn-primary" onclick="goBack()">Go Back</button>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
@@ -214,56 +226,116 @@
         const customQueryNav = document.getElementById('customQueryNav');
         const predefinedQueriesView = document.getElementById('predefinedQueriesView');
         const customQueryView = document.getElementById('customQueryView');
+        const databaseTableView = document.getElementById('databaseTableView');
 
         predefinedQueriesNav.addEventListener('click', function() {
             predefinedQueriesView.classList.remove('hidden');
             customQueryView.classList.add('hidden');
+            databaseTableView.classList.add('hidden');
         });
 
         customQueryNav.addEventListener('click', function() {
             customQueryView.classList.remove('hidden');
             predefinedQueriesView.classList.add('hidden');
+            databaseTableView.classList.add('hidden');
         });
 
         // Initial view
         predefinedQueriesView.classList.remove('hidden');
         customQueryView.classList.add('hidden');
-
-        const selectOptions = document.querySelectorAll('input[name="option"]');
-        const titleFieldType = document.getElementById('titleFieldType');
-        const asValueInput = document.getElementById('asValue');
-        const asSelect = document.getElementById('as');
-        const titleInput = document.getElementById('title');
-        const addTitleFieldButton = document.getElementById('addTitleFieldButton');
-        const dynamicTitleFields = document.getElementById('dynamicTitleFields');
-
-        function updateVisibility() {
-            const selectedOption = document.querySelector('input[name="option"]:checked').id;
-            if (selectedOption === 'option-1') { // SELECT
-                titleFieldType.style.display = 'inline';
-                asSelect.style.display = 'inline';
-                addTitleFieldButton.style.display = 'inline';
-            } else {
-                titleFieldType.style.display = 'none';
-                asSelect.style.display = 'none';
-                addTitleFieldButton.style.display = 'none';
-            }
-        }
-
-        selectOptions.forEach(option => {
-            option.addEventListener('change', updateVisibility);
-        });
-
-        asSelect.addEventListener('change', function() {
-            if (this.value === 'as') {
-                asValueInput.style.display = 'inline';
-            } else {
-                asValueInput.style.display = 'none';
-            }
-        });
-
-        updateVisibility(); // Initial call to set the correct visibility
+        databaseTableView.classList.add('hidden');
     });
+
+    function showTable(tableName) {
+        fetch(`php.php?table=${tableName}`)
+            .then(response => response.json())
+            .then(data => {
+                const tableContainer = document.getElementById('tableContainer');
+                tableContainer.innerHTML = generateTableHTML(data);
+                document.getElementById('databaseTableView').classList.remove('hidden');
+                document.getElementById('predefinedQueriesView').classList.add('hidden');
+                document.getElementById('customQueryView').classList.add('hidden');
+            })
+            .catch(error => console.error('Error fetching table data:', error));
+    }
+
+    function generateTableHTML(data) {
+        if (data.length === 0) return '<p>No data available</p>';
+
+        const headers = Object.keys(data[0]);
+        let tableHTML = '<table class="table table-striped"><thead><tr>';
+        headers.forEach(header => {
+            tableHTML += `<th>${header}</th>`;
+        });
+        tableHTML += '</tr></thead><tbody>';
+        data.forEach(row => {
+            tableHTML += '<tr>';
+            headers.forEach(header => {
+                tableHTML += `<td>${row[header]}</td>`;
+            });
+            tableHTML += '</tr>';
+        });
+        tableHTML += '</tbody></table>';
+        return tableHTML;
+    }
+
+    function goBack() {
+        document.getElementById('databaseTableView').classList.add('hidden');
+        document.getElementById('predefinedQueriesView').classList.remove('hidden');
+    }
+
+    const selectOptions = document.querySelectorAll('input[name="option"]');
+    const titleFieldType = document.getElementById('titleFieldType');
+    const asValueInput = document.getElementById('asValue');
+    const asSelect = document.getElementById('as');
+    const titleInput = document.getElementById('title');
+    const addTitleFieldButton = document.getElementById('addTitleFieldButton');
+    const dynamicTitleFields = document.getElementById('dynamicTitleFields');
+
+    function updateVisibility() {
+        const selectedOption = document.querySelector('input[name="option"]:checked').id;
+        if (selectedOption === 'option-1') { // SELECT
+            titleFieldType.style.display = 'inline';
+            asSelect.style.display = 'inline';
+            addTitleFieldButton.style.display = 'inline';
+        } else {
+            titleFieldType.style.display = 'none';
+            asSelect.style.display = 'none';
+            addTitleFieldButton.style.display = 'none';
+        }
+    }
+
+    selectOptions.forEach(option => {
+        option.addEventListener('change', updateVisibility);
+    });
+
+    asSelect.addEventListener('change', function() {
+        if (this.value === 'as') {
+            asValueInput.style.display = 'inline';
+        } else {
+            asValueInput.style.display = 'none';
+        }
+    });
+
+    function submitQuery(event) {
+        event.preventDefault();
+        const form = event.target;
+        const formData = new FormData(form);
+
+        fetch('php.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            const tableContainer = document.getElementById('tableContainer');
+            tableContainer.innerHTML = generateTableHTML(data);
+            document.getElementById('databaseTableView').classList.remove('hidden');
+            document.getElementById('predefinedQueriesView').classList.add('hidden');
+            document.getElementById('customQueryView').classList.add('hidden');
+        })
+        .catch(error => console.error('Error executing query:', error));
+    }
   </script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -357,7 +429,7 @@
                     secondParam.innerHTML = `
                         <label id="contentLabel">FROM: </label>
                         <select name="content" required id="content">
-                            <option value="table1">Table 1</option>
+                            <option value="Staff">Table 1</option>
                             <option value="table2">Table 2</option>
                         </select>
                     `;

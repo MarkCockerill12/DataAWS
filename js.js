@@ -453,3 +453,66 @@ function showSQLQuery() {
     alert(displaySql);
     return true;
 }
+
+function submitQuery(event) {
+    event.preventDefault();
+    const form = event.target;
+    const formData = new FormData(form);
+
+    fetch('php.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        const tableContainer = document.getElementById('tableContainer');
+        tableContainer.innerHTML = generateTableHTML(data);
+        document.getElementById('databaseTableView').classList.remove('hidden');
+        document.getElementById('predefinedQueriesView').classList.add('hidden');
+        document.getElementById('customQueryView').classList.add('hidden');
+    })
+    .catch(error => console.error('Error executing query:', error));
+}
+
+
+
+let userInstanceID = null;
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Function to fetch UserInstanceID from the server
+    function fetchUserInstanceID() {
+        fetch('login.php?action=getUserInstanceID')
+            .then(response => response.json())
+            .then(data => {
+                if (data.UserInstanceID) {
+                    userInstanceID = data.UserInstanceID;
+                    document.getElementById('displayStaffID').textContent = "StaffID: " + userInstanceID;
+                    console.log("UserInstanceID:", userInstanceID); // Log UserInstanceID to console
+                } else {
+                    document.getElementById('displayStaffID').textContent = "StaffID: Not logged in";
+                    console.log("UserInstanceID: Not logged in"); // Log not logged in message
+                }
+            })
+            .catch(error => console.error('Error fetching UserInstanceID:', error));
+    }
+
+    // Function to handle logout
+    function logout() {
+        fetch('login.php?action=logout')
+            .then(() => {
+                window.location.href = 'login.html';
+            })
+            .catch(error => console.error('Error logging out:', error));
+    }
+
+    // Add event listener to logout button
+    document.addEventListener('DOMContentLoaded', function() {
+        const logoutButton = document.getElementById('logoutButton');
+        if (logoutButton) {
+            logoutButton.addEventListener('click', logout);
+        }
+    });
+
+    // Call the function to fetch UserInstanceID
+    fetchUserInstanceID();
+});

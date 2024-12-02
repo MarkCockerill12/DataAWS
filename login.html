@@ -10,11 +10,13 @@
 <body>
 <div class="container">
 <!-- /* From Uiverse.io by andrew-demchenk0 */  -->
-<form class="form" onsubmit="return false;">
+<form class="form" name="form" method="post" action="login.php">
   <div class="title">Welcome,<br><span>login to continue</span></div>
-  <input type="text" id="username" placeholder="Username" name="username" class="input">
-  <input type="password" id="password" placeholder="Password" name="password" class="input">
-  <button type="button" class="button-confirm" onclick="loginButton()">Let`s go →</button>
+
+  <input type="text" id="username" placeholder="Username" name="Iusername" class="input">
+  <input type="password" id="password" placeholder="Password" name="Ipassword" class="input">
+  <button type="submit" class="button-confirm" name="login">Let`s go →</button>
+
 </form>
 </div>
 </body>

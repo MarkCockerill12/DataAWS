@@ -1,10 +1,11 @@
 <?php
-// configuration
-$dbhost     = "172.17.0.3";
+include 'login.php';
+
+$dbhost     = "steelsummit.caonv0ym8btc.us-east-1.rds.amazonaws.com";
 $dbport     = "3306";
 $dbname     = "SteelSummit";
-$dbuser     = "root";
-$dbpass     = "pass";
+$dbuser     = "admin";
+$dbpass     = "WineGums";
 
 try {
     // database connection
@@ -120,22 +121,12 @@ if (isset($_POST['title']) && isset($_POST['content']) && isset($_POST['selected
             if ($orderBy !== 'none' && !empty($orderByValue)) {
                 $sql .= " ORDER BY " . ($orderByFieldType !== 'none' ? strtoupper($orderByFieldType) . "({$orderByValue})" : $orderByValue) . " $orderBy";
             }
-            // Display the SQL command with the actual values
-            $displaySql = $sql;
-            foreach ($params as $key => $value) {
-                $displaySql = str_replace($key, "'$value'", $displaySql);
-            }
-            echo "<button onclick='history.back()'>Go Back</button>";
-            echo "<p>SQL Command: $displaySql</p>";
+            // Execute the query and return the results as JSON
             $q = $conn->prepare($sql);
             $q->execute($params);
-            $q->setFetchMode(PDO::FETCH_ASSOC);
-            while ($r = $q->fetch()) {
-                foreach ($r as $column => $value) {
-                    echo $column . ": " . $value . "<br>";
-                }
-                echo "<br>";
-            }
+            $result = $q->fetchAll(PDO::FETCH_ASSOC);
+            echo json_encode($result);
+            exit;
 
         } elseif ($selectedOption == "INSERT") {
             // Separate table name and columns
@@ -171,23 +162,18 @@ if (isset($_POST['title']) && isset($_POST['content']) && isset($_POST['selected
         
             // Ensure the values array matches the columns array in length
             if (count($columns) !== count($values)) {
-                echo "Error: Column count does not match value count.";
+                echo json_encode(['error' => 'Column count does not match value count.']);
                 exit;
             }
         
             $placeholders = implode(',', array_fill(0, count($values), '?'));
             $sql = "INSERT INTO $tableName (" . implode(',', $columns) . ") VALUES ($placeholders)";
             
-            // Display the SQL command with the actual values
-            $displaySql = $sql;
-            foreach ($values as $key => $value) {
-                $displaySql = preg_replace('/\?/', "'$value'", $displaySql, 1);
-            }
-            echo "<button onclick='history.back()'>Go Back</button>";
-            echo "<p>SQL Command: $displaySql</p>";
+            // Execute the query and return the result as JSON
             $q = $conn->prepare($sql);
             $q->execute($values);
-            echo "Record inserted successfully.";
+            echo json_encode(['success' => 'Record inserted successfully.']);
+            exit;
 
         } elseif ($selectedOption == "DELETE") {
             $sql = "DELETE FROM $title WHERE $whereField $whereRelation :whereValue";
@@ -213,16 +199,11 @@ if (isset($_POST['title']) && isset($_POST['content']) && isset($_POST['selected
                     $sql .= " " . implode(" ", $conditions);
                 }
             }
-            // Display the SQL command with the actual values
-            $displaySql = $sql;
-            foreach ($params as $key => $value) {
-                $displaySql = str_replace($key, "'$value'", $displaySql);
-            }
-            echo "<button onclick='history.back()'>Go Back</button>";
-            echo "<p>SQL Command: $displaySql</p>";
+            // Execute the query and return the result as JSON
             $q = $conn->prepare($sql);
             $q->execute($params);
-            echo "Record deleted successfully.";
+            echo json_encode(['success' => 'Record deleted successfully.']);
+            exit;
 
         } elseif ($selectedOption == "UPDATE") {
             // Retrieve dynamic fields for the SET clause
@@ -260,22 +241,19 @@ if (isset($_POST['title']) && isset($_POST['content']) && isset($_POST['selected
                 }
             }
 
-            // Display the SQL command with the actual values
-            $displaySql = $sql;
-            foreach ($params as $key => $value) {
-                $displaySql = str_replace($key, "'$value'", $displaySql);
-            }
-            echo "<button onclick='history.back()'>Go Back</button>";
-            echo "<p>SQL Command: $displaySql</p>";
+            // Execute the query and return the result as JSON
             $q = $conn->prepare($sql);
             $q->execute($params);
-            echo "Record updated successfully.";
+            echo json_encode(['success' => 'Record updated successfully.']);
+            exit;
 
         } else {
-            echo "Invalid operation.";
+            echo json_encode(['error' => 'Invalid operation.']);
+            exit;
         }
     } catch (PDOException $e) {
-        echo "Error: " . $e->getMessage();
+        echo json_encode(['error' => $e->getMessage()]);
+        exit;
     }
 }
 ?>

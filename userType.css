@@ -150,6 +150,20 @@ body {
   
   
   
+
+.databaseTableView {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 10px;
+    padding: 10px;
+  }
+
+
+
+
+
+
   
   /* Modal window styles */
   .modal {
