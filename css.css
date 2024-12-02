@@ -58,6 +58,20 @@ html, body {
   outline: none;
 }
 
+.btn-custom {
+            background-color: #007bff;
+            color: white;
+            border: none;
+        }
+
+  .btn-custom:hover {
+            background-color: #0056b3;
+        }
+
+  btn-custom:focus {
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.5);
+        }
+
 .input::placeholder {
   color: var(--font-color-sub);
   opacity: 0.8;
