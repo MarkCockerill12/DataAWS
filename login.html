@@ -20,9 +20,9 @@
     </nav>
 
     <!-- Login Form -->
-    <div class="form-container" name="form" method="post" action="login.php">
+    <div class="form-container" name="form">
         <div class="form-title">Welcome,<br><span>Login to continue</span></div>
-        <form onsubmit="return false;">
+        <form onsubmit="return false;" method="post" action="login.php">
             <div class="mb-3">
                 <label for="username" class="form-label">Username</label>
                 <input type="text" class="form-control" id="username" placeholder="Enter your username" name="username">
