@@ -4,31 +4,8 @@ include 'login.php';
 $dbhost     = "steelsummit.caonv0ym8btc.us-east-1.rds.amazonaws.com";
 $dbport     = "3306";
 $dbname     = "SteelSummit";
-$dbuser     = "admin";
-$dbpass     = "WineGums";
-
-
-// Determine the referring URL
-$referrer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
-
-//THIS CODE CAUSES ERRORS :(
-// // Redirect based on the referrer
-// if (strpos($referrer, 'ceo.html') !== false) {
-//     //include 'php.php';
-//     $messages[] = "ceo";
-// } elseif (strpos($referrer, 'staffs.html') !== false) {
-//     //include 'staffs.php';
-//     $messages[] = "staffs";
-// } elseif (strpos($referrer, 'staffm.html') !== false) {
-//     //include 'staffm.php';
-//     $messages[] = "staffm";
-// } elseif (strpos($referrer, 'manager.html') !== false) {
-//     //include 'manager.php';
-//     $messages[] = "manager";
-// } else {
-//     echo json_encode(['error' => 'Invalid referrer', 'messages' => $messages]);
-//     exit;
-// }
+$dbuser     = "ShopManager";
+$dbpass     = "Pass123";
 
 
 try {
@@ -74,12 +51,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 }
-
-
-
-
-
-
 
 
 
@@ -229,36 +200,6 @@ if (isset($_POST['title']) && isset($_POST['content']) && isset($_POST['selected
             $q = $conn->prepare($sql);
             $q->execute($values);
             echo json_encode(['success' => 'Record inserted successfully.']);
-            exit;
-
-        } elseif ($selectedOption == "DELETE") {
-            $sql = "DELETE FROM $title WHERE $whereField $whereRelation :whereValue";
-            $params = [':whereValue' => $whereValue];
-            if ($whereRelation === 'NOT') {
-                $sql = str_replace("$whereField NOT :whereValue", "$whereField != :whereValue", $sql);
-            }
-            if (isset($_POST['dynamicWhereField']) && isset($_POST['dynamicWhereValue']) && isset($_POST['dynamicWhereRelation']) && isset($_POST['dynamicWhereLogic'])) {
-                $fields = $_POST['dynamicWhereField'];
-                $values = $_POST['dynamicWhereValue'];
-                $relations = $_POST['dynamicWhereRelation'];
-                $logics = $_POST['dynamicWhereLogic'];
-                $conditions = [];
-                for ($i = 0; $i < count($fields); $i++) {
-                    $condition = $logics[$i] . " " . $fields[$i] . " " . $relations[$i] . " :" . $fields[$i];
-                    if ($relations[$i] === 'NOT') {
-                        $condition = str_replace("$fields[$i] NOT :" . $fields[$i], "$fields[$i] != :" . $fields[$i], $condition);
-                    }
-                    $conditions[] = $condition;
-                    $params[":" . $fields[$i]] = $relations[$i] === 'LIKE' ? "%{$values[$i]}%" : $values[$i];
-                }
-                if (!empty($conditions)) {
-                    $sql .= " " . implode(" ", $conditions);
-                }
-            }
-            // Execute the query and return the result as JSON
-            $q = $conn->prepare($sql);
-            $q->execute($params);
-            echo json_encode(['success' => 'Record deleted successfully.']);
             exit;
 
         } elseif ($selectedOption == "UPDATE") {
