@@ -454,7 +454,7 @@
                       </select>
                       <input type="text" name="asValue" id="asValue" style="display: none;" placeholder="AS Value" />
                       <div id="dynamicTitleFields"></div>
-                      <button type="button" class="btn btn-primary" id="addTitleFieldButton">Add Field</button>
+                      <button type="button" class="btn btn-primary mt-2" id="addTitleFieldButton">Add Field</button>
                   `;
                   secondParam.innerHTML = `
                       <label id="contentLabel">FROM: </label>
@@ -479,7 +479,7 @@
                       <label id="contentLabel">VALUES:</label>
                       <input name="content" required id="content" />
                       <div id="dynamicFromFields"></div>
-                      <button type="button" class="btn btn-primary" id="addFromFieldButton">Add VALUE</button>
+                      <button type="button" class="btn btn-primary mt-2" id="addFromFieldButton">Add VALUE</button>
                   `;
                 } else if (this.id === 'option-3') {
                     firstParam.innerHTML = `
@@ -494,7 +494,7 @@
                       <label id="contentLabel">FROM:</label>
                       <input name="content" required id="content" />
                       <div id="dynamicFromFields"></div>
-                      <button type="button" class="btn btn-primary" id="addFromFieldButton">Add VALUE</button>
+                      <button type="button" class="btn btn-primary mt-2" id="addFromFieldButton">Add VALUE</button>
                   `;
               }
               attachEventListeners();
