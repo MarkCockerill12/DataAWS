@@ -476,6 +476,10 @@ function submitQuery(event) {
 
 
 
+
+
+
+
 let userInstanceID = null;
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -487,6 +491,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (data.UserInstanceID) {
                     userInstanceID = data.UserInstanceID;
                     document.getElementById('displayStaffID').textContent = "StaffID: " + userInstanceID;
+                    //document.getElementById('userID').textContent = userInstanceID;
                     console.log("UserInstanceID:", userInstanceID); // Log UserInstanceID to console
                 } else {
                     document.getElementById('displayStaffID').textContent = "StaffID: Not logged in";
@@ -506,12 +511,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Add event listener to logout button
-    document.addEventListener('DOMContentLoaded', function() {
-        const logoutButton = document.getElementById('logoutButton');
-        if (logoutButton) {
-            logoutButton.addEventListener('click', logout);
-        }
-    });
+    const logoutButton = document.getElementById('logoutButton');
+    if (logoutButton) {
+        logoutButton.addEventListener('click', logout);
+    }
 
     // Call the function to fetch UserInstanceID
     fetchUserInstanceID();
