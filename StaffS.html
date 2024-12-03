@@ -36,13 +36,13 @@
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">HTML Tables</a>
               <ul class="dropdown-menu">
-                <li><a class="dropdown-item" onclick="showTable('Stock')">Stock</a></li>
-                <li><a class="dropdown-item" onclick="showTable('TimeTable')">Timetable</a></li>
+                <li><a class="dropdown-item" onclick="showTable('Staff_Stock')">Stock</a></li> 
+                <!-- THESE NEED TO BE FIXED TO ONLY USE  WITH USERID -->
+                <li><a class="dropdown-item" onclick="showTable('Staff_Timetable')">Timetable</a></li>
               </ul>
             </li>
           </ul>
           <span class="navbar-text">
-            HTML TABLE:
           </span>
           <span class="navbar-text" id="displayStaffID"> </span>
           <button class="btn btn-danger" id="logoutButton">Logout</button>
@@ -53,9 +53,8 @@
     <!-- Predefined Queries View -->
     <div id="predefinedQueriesView">
       <h2>Predefined Queries</h2>
-      <button class="btn btn-primary" onclick="runPredefinedQuery('SELECT * FROM users')">Get All Users</button>
-      <button class="btn btn-primary" onclick="runPredefinedQuery('SELECT * FROM orders')">Get All Orders</button>
-      <!-- Add more predefined query buttons as needed -->
+      <button class="btn btn-primary" onclick="runPredefinedQuery('CALL ShopStock_viewQuery(userID)')">View Shop Stock</button>      
+      <button class="btn btn-primary" onclick="runPredefinedQuery('CALL ShopSchedulePersonal_viewQuery(1)')">View Personal Staff Timetable</button>
     </div>
 
     <!-- Custom Query View -->
@@ -81,26 +80,30 @@
           </div>
       </div>
 
-    <!-- Form for SQL Query Builder -->
-    <form name="frmContact" class="needs-validation" method="post" onsubmit="return submitQuery(event)">
-      <!-- Dropdown menu to select the query type -->
-      <div class="select">
-        <div class="selected" data-default="Choose Query" data-one="SELECT">
-          <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512" class="arrow">
-            <path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"></path>
-          </svg>
-        </div>
-        <div class="options">
-          <div title="all">
-            <input id="all" name="option" type="radio" checked="" />
-            <label class="option" for="all" data-txt="Choose Query"></label>
+        <!-- Form for SQL Query Builder -->
+        <form name="frmContact" class="needs-validation" method="post" action="php.php">
+          <!-- Dropdown menu to select the query type -->
+          <div class="select">
+            <div class="selected" data-default="Choose Query" data-one="SELECT" data-two="UPDATE">
+              <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512" class="arrow">
+                <path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"></path>
+              </svg>
+            </div>
+            <div class="options">
+              <div title="all">
+                <input id="all" name="option" type="radio" checked="" />
+                <label class="option" for="all" data-txt="Choose Query"></label>
+              </div>
+              <div title="option-1">
+                <input id="option-1" name="option" type="radio" />
+                <label class="option" for="option-1" data-txt="SELECT"></label>
+              </div>
+              <div title="option-2">
+                <input id="option-2" name="option" type="radio" />
+                <label class="option" for="option-2" data-txt="UPDATE"></label>
+              </div>
+            </div>
           </div>
-          <div title="option-1">
-            <input id="option-1" name="option" type="radio" />
-            <label class="option" for="option-1" data-txt="SELECT"></label>
-          </div>
-        </div>
-      </div>
   
       <div class="THEquery" style="display: none;">
         <!-- Text input for query -->
@@ -330,6 +333,150 @@
         })
         .catch(error => console.error('Error executing query:', error));
     }
+
+
+    function runPredefinedQuery(queryName) {
+    fetch('php.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ queryName: queryName })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            console.error('Error executing query:', data.error);
+        } else {
+            const tableContainer = document.getElementById('tableContainer');
+            tableContainer.innerHTML = generateTableHTML(data);
+            document.getElementById('databaseTableView').classList.remove('hidden');
+            document.getElementById('predefinedQueriesView').classList.add('hidden');
+            document.getElementById('customQueryView').classList.add('hidden');
+        }
+    })
+    .catch(error => console.error('Error executing query:', error));
+}
+  </script>
+
+<!-- this script is to update parts of the form depending on what function is selected -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      const selectOptions = document.querySelectorAll('input[name="option"]');
+      const firstParam = document.querySelector('.firstParam');
+      const secondParam = document.querySelector('.secondParam');
+
+      function attachEventListeners() {
+          const addTitleFieldButton = document.getElementById('addTitleFieldButton');
+          if (addTitleFieldButton) {
+              addTitleFieldButton.addEventListener('click', function() {
+                  const dynamicTitleFields = document.getElementById('dynamicTitleFields');
+                  const newField = document.createElement('div');
+                  newField.innerHTML = `
+                      <label>,</label>
+                      <select name="dynamicTitleFieldType[]">
+                          <option value="none">None</option>
+                          <option value="max">MAX</option>
+                          <option value="min">MIN</option>
+                          <option value="sum">SUM</option>
+                          <option value="avg">AVG</option>
+                          <option value="count">COUNT</option>
+                      </select>
+                      <input type="text" name="dynamicTitleField[]" placeholder="Title Field" />
+                      <select name="dynamicAs[]">
+                          <option value="none">None</option>
+                          <option value="as">AS</option>
+                      </select>
+                      <input type="text" name="dynamicAsValue[]" placeholder="AS Value" style="display: none;" />
+                      <button type="button" class="removeFieldButton">Remove</button>
+                  `;
+                  dynamicTitleFields.appendChild(newField);
+
+                  const asSelect = newField.querySelector('select[name="dynamicAs[]"]');
+                  const asValueInput = newField.querySelector('input[name="dynamicAsValue[]"]');
+                  asSelect.addEventListener('change', function() {
+                      if (this.value === 'as') {
+                          asValueInput.style.display = 'inline';
+                      } else {
+                          asValueInput.style.display = 'none';
+                      }
+                  });
+
+                  newField.querySelector('.removeFieldButton').addEventListener('click', function() {
+                      dynamicTitleFields.removeChild(newField);
+                  });
+              });
+          }
+
+          const addFromFieldButton = document.getElementById('addFromFieldButton');
+          if (addFromFieldButton) {
+              addFromFieldButton.addEventListener('click', function() {
+                  const dynamicFromFields = document.getElementById('dynamicFromFields');
+                  const newField = document.createElement('div');
+                  newField.innerHTML = `
+                      <label>,</label>
+                      <input type="text" name="dynamicFromField[]" placeholder="second Field" />
+                      <button type="button" class="removeFieldButton">Remove</button>
+                  `;
+                  dynamicFromFields.appendChild(newField);
+
+                  newField.querySelector('.removeFieldButton').addEventListener('click', function() {
+                      dynamicFromFields.removeChild(newField);
+                  });
+              });
+          }
+      }
+
+      selectOptions.forEach(option => {
+          option.addEventListener('change', function() {
+              if (this.id === 'option-1') { // SELECT
+                  firstParam.innerHTML = `
+                      <label id="titleLabel">Title</label>
+                      <select name="titleFieldType" id="titleFieldType">
+                          <option value="none">None</option>
+                          <option value="max">MAX</option>
+                          <option value="min">MIN</option>
+                          <option value="sum">SUM</option>
+                          <option value="avg">AVG</option>
+                          <option value="count">COUNT</option>
+                      </select>
+                      <input name="title" required id="title" />
+                      <select name="as" id="as">
+                          <option value="none">None</option>
+                          <option value="as">AS</option>
+                      </select>
+                      <input type="text" name="asValue" id="asValue" style="display: none;" placeholder="AS Value" />
+                      <div id="dynamicTitleFields"></div>
+                      <button type="button" id="addTitleFieldButton">Add Field</button>
+                  `;
+                  secondParam.innerHTML = `
+                      <label id="contentLabel">FROM: </label>
+                      <select name="content" required id="content">
+                          <option value="Staff">Table 1</option>
+                          <option value="table2">Table 2</option>
+                      </select>
+                  `;
+              } else if (this.id === 'option-2') {
+                  firstParam.innerHTML = `
+                      <div>
+                          <label for="title">Title:</label>
+                          <span id="title">Shop_Stock("Amount")</span>
+                          <input type="hidden" name="title" value='Shop_Stock("Amount")' />
+                      </div>
+                  `;
+                  secondParam.innerHTML = `
+                      <label id="contentLabel">FROM:</label>
+                      <input name="content" required id="content" />
+                      <div id="dynamicFromFields"></div>
+                      <button type="button" id="addFromFieldButton">Add FROM</button>
+                  `;
+              }
+              attachEventListeners();
+          });
+      });
+
+      attachEventListeners();
+  });
   </script>
 </body>
 </html>

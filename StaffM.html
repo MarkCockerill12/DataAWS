@@ -36,14 +36,11 @@
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">HTML Tables</a>
               <ul class="dropdown-menu">
-                <li><a class="dropdown-item" onclick="showTable('Stock')">Stock</a></li>
-                <li><a class="dropdown-item" onclick="showTable('TimeTable')">Timetable</a></li>
+                <li><a class="dropdown-item" onclick="showTable('Factory_Stock')">Stock</a></li>
+                <li><a class="dropdown-item" onclick="showTable('Factory_Timetable')">Timetable</a></li>
               </ul>
             </li>
           </ul>
-          <span class="navbar-text">
-            HTML TABLE:
-          </span>
           <span class="navbar-text" id="displayStaffID"> </span>
           <button class="btn btn-danger" id="logoutButton">Logout</button>
         </div>
@@ -53,9 +50,8 @@
     <!-- Predefined Queries View -->
     <div id="predefinedQueriesView">
       <h2>Predefined Queries</h2>
-      <button class="btn btn-primary" onclick="runPredefinedQuery('SELECT * FROM users')">Get All Users</button>
-      <button class="btn btn-primary" onclick="runPredefinedQuery('SELECT * FROM orders')">Get All Orders</button>
-      <!-- Add more predefined query buttons as needed -->
+      <button class="btn btn-primary" onclick="runPredefinedQuery('CALL Factorymaterial_viewQuery(1)')">View Factory Materials</button>      
+      <button class="btn btn-primary" onclick="runPredefinedQuery('CALL FactoryStock_viewQuery(displayStaffID)')">View Factory Stock</button>
     </div>
 
     <!-- Custom Query View -->
@@ -330,6 +326,30 @@
         })
         .catch(error => console.error('Error executing query:', error));
     }
+
+
+    function runPredefinedQuery(queryName) {
+    fetch('php.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ queryName: queryName })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            console.error('Error executing query:', data.error);
+        } else {
+            const tableContainer = document.getElementById('tableContainer');
+            tableContainer.innerHTML = generateTableHTML(data);
+            document.getElementById('databaseTableView').classList.remove('hidden');
+            document.getElementById('predefinedQueriesView').classList.add('hidden');
+            document.getElementById('customQueryView').classList.add('hidden');
+        }
+    })
+    .catch(error => console.error('Error executing query:', error));
+}
   </script>
 </body>
 </html>
