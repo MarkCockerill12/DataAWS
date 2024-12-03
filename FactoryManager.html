@@ -249,37 +249,46 @@
     });
 
     function showTable(tableName) {
-        fetch(`php.php?table=${tableName}`)
-            .then(response => response.json())
-            .then(data => {
-                const tableContainer = document.getElementById('tableContainer');
+    fetch(`php.php?table=${tableName}`)
+        .then(response => response.json())
+        .then(data => {
+            console.log('Data received:', data); // Log the received data
+            const tableContainer = document.getElementById('tableContainer');
+            if (Array.isArray(data) && data.length > 0) {
                 tableContainer.innerHTML = generateTableHTML(data);
-                document.getElementById('databaseTableView').classList.remove('hidden');
-                document.getElementById('predefinedQueriesView').classList.add('hidden');
-                document.getElementById('customQueryView').classList.add('hidden');
-            })
-            .catch(error => console.error('Error fetching table data:', error));
+            } else {
+                console.error('No data returned or data is not in expected format');
+                tableContainer.innerHTML = '<p>No data available</p>';
+            }
+            document.getElementById('databaseTableView').classList.remove('hidden');
+            document.getElementById('predefinedQueriesView').classList.add('hidden');
+            document.getElementById('customQueryView').classList.add('hidden');
+        })
+        .catch(error => console.error('Error fetching table data:', error));
+}
+
+function generateTableHTML(data) {
+    if (!Array.isArray(data) || data.length === 0) {
+        console.error('Invalid data format or no data available:', data);
+        return '<p>No data available</p>';
     }
 
-    function generateTableHTML(data) {
-        if (data.length === 0) return '<p>No data available</p>';
-
-        const headers = Object.keys(data[0]);
-        let tableHTML = '<table class="table table-striped"><thead><tr>';
+    const headers = Object.keys(data[0]);
+    let tableHTML = '<table class="table table-striped"><thead><tr>';
+    headers.forEach(header => {
+        tableHTML += `<th>${header}</th>`;
+    });
+    tableHTML += '</tr></thead><tbody>';
+    data.forEach(row => {
+        tableHTML += '<tr>';
         headers.forEach(header => {
-            tableHTML += `<th>${header}</th>`;
+            tableHTML += `<td>${row[header]}</td>`;
         });
-        tableHTML += '</tr></thead><tbody>';
-        data.forEach(row => {
-            tableHTML += '<tr>';
-            headers.forEach(header => {
-                tableHTML += `<td>${row[header]}</td>`;
-            });
-            tableHTML += '</tr>';
-        });
-        tableHTML += '</tbody></table>';
-        return tableHTML;
-    }
+        tableHTML += '</tr>';
+    });
+    tableHTML += '</tbody></table>';
+    return tableHTML;
+}
 
     function goBack() {
         document.getElementById('databaseTableView').classList.add('hidden');
