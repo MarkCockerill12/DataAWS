@@ -58,12 +58,12 @@
       <div class="mb-3">
         <label for="factoryStaffDate" class="form-label">Date for Factory Staff Timetable:</label>
         <input type="date" id="factoryStaffDate" class="form-control">  
-        <button class="btn btn-primary mt-2" onclick="runPredefinedQuery('CALL factoryManagerSchedule_query(' + UserInstanceID + ', \'' + document.getElementById('factoryStaffDate').value + '\')')">View Factory Staff Timetable</button>
+        <button class="btn btn-primary mt-2" onclick="runPredefinedQuery('CALL factoryManagerSchedule_query(UserInstanceID, \'' + document.getElementById('factoryStaffDate').value + '\')')">View Factory Staff Timetable</button>
       </div>
       <div class="mb-3">
         <label for="shopStaffDate" class="form-label">Date for Shop Staff Timetable:</label>
         <input type="date" id="shopStaffDate" class="form-control">
-        <button class="btn btn-primary mt-2" onclick="runPredefinedQuery('CALL ShopSchedule_viewQuery(' + UserInstanceID + ', \'' + document.getElementById('shopStaffDate').value + '\')')">View Shop Staff Timetable</button>
+        <button class="btn btn-primary mt-2" onclick="runPredefinedQuery('CALL ShopSchedule_viewQuery(UserInstanceID , \'' + document.getElementById('shopStaffDate').value + '\')')">View Shop Staff Timetable</button>
       </div>
     </div>
 
