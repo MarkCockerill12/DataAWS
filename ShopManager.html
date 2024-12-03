@@ -52,8 +52,16 @@
     <!-- Predefined Queries View -->
     <div id="predefinedQueriesView">
       <h2>Predefined Queries</h2>
-      <button class="btn btn-primary" onclick="runPredefinedQuery('CALL factoryManagerSchedule_query(userID)')">View Factory Staff Timetable</button>      
-      <button class="btn btn-primary" onclick="runPredefinedQuery('CALL ShopSchedule_viewQuery(1, 2024-11-21)')">View Personal Staff Timetable</button>
+      <div>
+        <label for="factoryStaffDate">Select Date for Factory Staff Timetable:</label>
+        <input type="date" id="factoryStaffDate">
+        <button class="btn btn-primary" onclick="runPredefinedQueryWithDate('CALL factoryManagerSchedule_query(UserInstanceID, DATE)', 'factoryStaffDate')">View Factory Staff Timetable</button>
+    </div>
+    <div>
+        <label for="personalStaffDate">Select Date for Personal Staff Timetable:</label>
+        <input type="date" id="personalStaffDate">
+        <button class="btn btn-primary" onclick="runPredefinedQueryWithDate('CALL ShopSchedule_viewQuery(UserInstanceID, DATE)', 'personalStaffDate')">View Personal Staff Timetable</button>
+    </div>
     </div>
 
     <!-- Custom Query View -->
