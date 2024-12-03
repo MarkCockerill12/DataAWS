@@ -56,28 +56,21 @@ function hideHelpModal() {
 function openTab(evt, tabName) {
     const tabTitle = document.getElementById('tabTitle');
     const tabDescription = document.getElementById('tabDescription');
-    const tabImage = document.getElementById('tabImage');
 
-    if (tabName === 'SELECT') {
-        tabTitle.textContent = 'SELECT Function';
-        tabDescription.textContent = 'Explanation and examples for the SELECT function. FULL OUTER JOIN works by unifying left join and right join, this is because mySQL doesnt allow for FULL JOIN to be executed';
-        tabImage.src = 'select_example.png';
-        tabImage.alt = 'SELECT Example';
-    } else if (tabName === 'INSERT') {
-        tabTitle.textContent = 'INSERT Function';
-        tabDescription.textContent = 'Explanation and examples for the INSERT function.';
-        tabImage.src = 'insert_example.png';
-        tabImage.alt = 'INSERT Example';
-    } else if (tabName === 'UPDATE') {
-        tabTitle.textContent = 'UPDATE Function';
-        tabDescription.textContent = 'Explanation and examples for the UPDATE function.';
-        tabImage.src = 'update_example.png';
-        tabImage.alt = 'UPDATE Example';
-    } else if (tabName === 'DELETE') {
-        tabTitle.textContent = 'DELETE Function';
-        tabDescription.textContent = 'Explanation and examples for the DELETE function.';
-        tabImage.src = 'delete_example.png';
-        tabImage.alt = 'DELETE Example';
+    if (tabTitle && tabDescription) {
+        if (tabName === 'SELECT') {
+            tabTitle.textContent = 'SELECT Function';
+            tabDescription.textContent = 'The SELECT statement is used to select data from a database and has many parameters. MIN: Returns the smallest value in a column. MAX: Returns the largest value in a column. SUM: Calculates the total sum of a columns values. AVG: Returns the average value of a column. COUNT: Counts the number of rows in a column. The AS parameter FULL OUTER JOIN works by unifying left join and right join, this is because mySQL doesnt allow for FULL JOIN to be executed. INNER JOIN: Returns matching rows from both tables. LEFT JOIN: Returns all rows from the left table and matching rows from the right. RIGHT JOIN: Returns all rows from the right table and matching rows from the left. FULL JOIN: Returns all rows when theres a match in either table.';
+        } else if (tabName === 'INSERT') {
+            tabTitle.textContent = 'INSERT Function';
+            tabDescription.textContent = 'The Insert function is used to insert a record into a table. Insert commands are in the form INSERT INTO table_name (column1, column2, column3, ...) VALUES (value1, value2, value3, ...). Values left empty will be NULL in the field.;';
+        } else if (tabName === 'UPDATE') {
+            tabTitle.textContent = 'UPDATE Function';
+            tabDescription.textContent = 'The UPDATE function is used to modify the existing records in a table. Update commands are in the form: UPDATE table_name SET column1 = value1, column2 = value2, ... WHERE condition;';
+        } else if (tabName === 'DELETE') {
+            tabTitle.textContent = 'DELETE Function';
+            tabDescription.textContent = 'The DELETE function can be used to remove a record inside a table. Delete commands are in the form: DELETE FROM table_name WHERE condition. For condition, possible options are: "=, Like, <, >, Not';
+        }
     }
 
     const tablinks = document.querySelectorAll('.tablink');

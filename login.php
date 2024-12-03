@@ -52,7 +52,7 @@ if (isset($_POST["Iusername"], $_POST["Ipassword"])) {
         if ($row['Position'] == "Staff") {
             header("Location: ShopStaff.html");
             exit();
-        } elseif ($row['Position'] == "ShopManager") {
+        } elseif ($row['Position'] == "Manager") {
             header("Location: ShopManager.html");
             exit();
         } elseif ($row['Position'] == "CEO") {
