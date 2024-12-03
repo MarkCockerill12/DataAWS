@@ -266,24 +266,34 @@
     }
 
     function generateTableHTML(data) {
-        if (data.length === 0) return '<p>No data available</p>';
+        if (!Array.isArray(data) || data.length === 0) {
+          console.error('Invalid data format or no data available:', data);
+          return '<p>No data available</p>';
+        }
 
         const headers = Object.keys(data[0]);
+        console.log('Headers:', headers); // Log headers for debugging
         let tableHTML = '<table class="table table-striped"><thead><tr>';
         headers.forEach(header => {
-            tableHTML += `<th>${header}</th>`;
+          tableHTML += `<th>${header}</th>`;
         });
         tableHTML += '</tr></thead><tbody>';
         data.forEach(row => {
-            tableHTML += '<tr>';
-            headers.forEach(header => {
-                tableHTML += `<td>${row[header]}</td>`;
-            });
-            tableHTML += '</tr>';
+          tableHTML += '<tr>';
+          headers.forEach(header => {
+            tableHTML += `<td>${row[header]}</td>`;
+          });
+          tableHTML += '</tr>';
         });
         tableHTML += '</tbody></table>';
+        console.log('Generated Table HTML:', tableHTML); // Log generated HTML for debugging
         return tableHTML;
-    }
+      }
+
+      function goBack() {
+        document.getElementById('databaseTableView').classList.add('hidden');
+        document.getElementById('predefinedQueriesView').classList.remove('hidden');
+      }
 
     function goBack() {
         document.getElementById('databaseTableView').classList.add('hidden');
