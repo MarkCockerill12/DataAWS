@@ -5,7 +5,7 @@ $dbhost     = "steelsummit.caonv0ym8btc.us-east-1.rds.amazonaws.com";
 $dbport     = "3306";
 $dbname     = "SteelSummit";
 $dbuser     = "FactoryManager";
-$dbpass     = "Pass123";
+$dbpass     = "password123";
 
 
 try {
