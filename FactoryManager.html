@@ -362,40 +362,37 @@ function generateTableHTML(data) {
 
 
     function runPredefinedQueryWithNumberAndDate(query, numberInputId, dateInputId) {
-    const numberInput = document.getElementById(numberInputId).value;
-    const dateInput = document.getElementById(dateInputId).value;
-    console.log('Selected Number:', numberInput); // Debugging log
-    console.log('Selected Date:', dateInput); // Debugging log
-    if (numberInput && dateInput) {
-        query = query.replace('NUMBER', numberInput).replace('DATE', `"${dateInput}"`);
-        console.log('Query:', query); // Debugging log
-    }
-    fetch('php.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ queryName: query })
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log('Data received:', data); // Log the received data
-        const tableContainer = document.getElementById('tableContainer');
-        if (data.error) {
-            console.error('Error executing query:', data.error);
-            tableContainer.innerHTML = `<p>Error: ${data.error}</p>`;
-        } else if (Array.isArray(data) && data.length > 0) {
-            tableContainer.innerHTML = generateTableHTML(data);
-        } else {
-            console.error('No data returned or data is not in expected format');
-            tableContainer.innerHTML = '<p>No data available</p>';
+        const numberInput = document.getElementById(numberInputId).value;
+        const dateInput = document.getElementById(dateInputId).value;
+        console.log('Selected Number:', numberInput); // Debugging log
+        console.log('Selected Date:', dateInput); // Debugging log
+        if (numberInput && dateInput) {
+            query = query.replace('NUMBER', numberInput).replace('DATE', `"${dateInput}"`);
+            console.log('Query:', query); // Debugging log
         }
-        document.getElementById('databaseTableView').classList.remove('hidden');
-        document.getElementById('predefinedQueriesView').classList.add('hidden');
-        document.getElementById('customQueryView').classList.add('hidden');
-    })
-    .catch(error => console.error('Error executing query:', error));
-}
+        fetch('shopmanager.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ queryName: query })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Response Data:', data); // Debugging log
+            if (data.error) {
+                console.error('Error executing query:', data.error);
+            } else {
+                const tableContainer = document.getElementById('tableContainer');
+                tableContainer.innerHTML = generateTableHTML(data);
+                console.log('Generated Table HTML:', tableContainer.innerHTML); // Debugging log
+                document.getElementById('databaseTableView').classList.remove('hidden');
+                document.getElementById('predefinedQueriesView').classList.add('hidden');
+                document.getElementById('customQueryView').classList.add('hidden');
+            }
+        })
+        .catch(error => console.error('Error executing query:', error));
+    }
   </script>
 
 
