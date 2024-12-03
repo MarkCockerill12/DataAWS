@@ -1,11 +1,6 @@
 <?php
 session_start();
 
-// Store UserInstanceID in session for use across HTML and PHP
-if (!empty($_SESSION['StaffID'])) {
-    $_SESSION['UserInstanceID'] = $_SESSION['StaffID'];
-}
-
 $dbhost     = "steelsummit.caonv0ym8btc.us-east-1.rds.amazonaws.com";
 $dbport     = "3306";
 $dbname     = "SteelSummit";

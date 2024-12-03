@@ -53,8 +53,8 @@
     <!-- Predefined Queries View -->
     <div id="predefinedQueriesView">
       <h2>Predefined Queries</h2>
-      <button class="btn btn-primary" onclick="runPredefinedQuery('CALL ShopStock_viewQuery(UserInstanceID)')">View Shop Stock</button>      
-      <button class="btn btn-primary" onclick="runPredefinedQuery('CALL ShopSchedulePersonal_viewQuery(UserInstanceID)')">View Personal Staff Timetable</button>
+      <button class="btn btn-primary" onclick="runPredefinedQuery('CALL ShopStock_viewQuery(userID)')">View Shop Stock</button>      
+      <button class="btn btn-primary" onclick="runPredefinedQuery('CALL ShopSchedulePersonal_viewQuery(1)')">View Personal Staff Timetable</button>
     </div>
 
     <!-- Custom Query View -->
@@ -452,8 +452,8 @@
                   secondParam.innerHTML = `
                       <label id="contentLabel">FROM: </label>
                       <select name="content" required id="content">
-                          <option value="Staff">Table 1</option>
-                          <option value="table2">Table 2</option>
+                        <option value="ShopStaffSchedule_view">Staff Schedule</option>
+                        <option value="ShopStockStaff_view">Stock</option>
                       </select>
                   `;
               } else if (this.id === 'option-2') {

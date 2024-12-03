@@ -1,4 +1,3 @@
-<?php session_start(); ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -51,8 +50,8 @@
     <!-- Predefined Queries View -->
     <div id="predefinedQueriesView">
       <h2>Predefined Queries</h2>
-      <button class="btn btn-primary" onclick="runPredefinedQuery('CALL Factorymaterial_viewQuery(UserInstanceID)')">View Factory Materials</button>      
-      <button class="btn btn-primary" onclick="runPredefinedQuery('CALL FactoryStock_viewQuery(UserInstanceID)')">View Factory Stock</button>
+      <button class="btn btn-primary" onclick="runPredefinedQuery('CALL Factorymaterial_viewQuery(1)')">View Factory Materials</button>      
+      <button class="btn btn-primary" onclick="runPredefinedQuery('CALL FactoryStock_viewQuery(displayStaffID)')">View Factory Stock</button>
     </div>
 
     <!-- Custom Query View -->
@@ -126,8 +125,8 @@
         <div class="secondParam">
           <label id="contentLabel">FROM: </label>
           <select name="content" required id="content">
-            <option value="ManufactorStaffSchedule_view">Staff Schedule</option>
-            <option value="ManufactorStockStaff_view">Stock</option>
+            <option value="factoryStaffSchedule_view">Staff Schedule</option>
+            <option value="FactoryStockStaff_view">Stock</option>
           </select>
         </div>
 

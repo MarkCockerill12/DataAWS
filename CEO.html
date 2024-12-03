@@ -41,8 +41,8 @@
               <button class="btn btn-outline-success" onclick="showTable(document.getElementById('search').value); return false;" type="button">Search</button>
             </form>
           </ul>
-          <span class="navbar-text" id="displayStaffID"><?php echo isset($_SESSION['UserInstanceID']) ? $_SESSION['UserInstanceID'] : ''; ?></span>
-          <button class="btn btn-danger" id="logoutButton" onclick="logout()">Logout</button>
+          <span class="navbar-text" id="displayStaffID"> </span>
+          <button class="btn btn-danger" id="logoutButton">Logout</button>
         </div>
       </div>
     </nav>
@@ -342,23 +342,5 @@
         .catch(error => console.error('Error executing query:', error));
     }
   </script>
-  <script>
-function logout() {
-  fetch('logout.php', {
-    method: 'POST',
-    credentials: 'include'
-  })
-  .then(response => response.json())
-  .then(data => {
-    if (data.success) {
-      window.location.href = 'login.html';
-    } else {
-      console.error('Logout failed:', data.error);
-    }
-  })
-  .catch(error => console.error('Error:', error));
-}
-</script>
 </body>
 </html>
-

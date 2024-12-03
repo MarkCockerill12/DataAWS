@@ -11,26 +11,24 @@ $dbpass     = "WineGums";
 // Determine the referring URL
 $referrer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
 
-//THIS CODE CAUSES ERRORS IT NEEDS TO BE FIXED TO REDIRECT CODE TO THE CORRECT PHP FILE
-// Initialize messages array
-$messages = [];
-
-// Handle logic based on the referrer
-if (strpos($referrer, 'ceo.html') !== false) {
-    $messages[] = "ceo";
-} elseif (strpos($referrer, 'staffs.html') !== false) {
-    include 'staffs.php';
-    $messages[] = "staffs";
-} elseif (strpos($referrer, 'staffm.html') !== false) {
-    include 'staffm.php';
-    $messages[] = "staffm";
-} elseif (strpos($referrer, 'manager.html') !== false) {
-    include 'manager.php';
-    $messages[] = "manager";
-} else {
-    echo json_encode(['error' => 'Invalid referrer', 'messages' => $messages]);
-    exit;
-}
+//THIS CODE CAUSES ERRORS :(
+// // Redirect based on the referrer
+// if (strpos($referrer, 'ceo.html') !== false) {
+//     //include 'php.php';
+//     $messages[] = "ceo";
+// } elseif (strpos($referrer, 'staffs.html') !== false) {
+//     //include 'staffs.php';
+//     $messages[] = "staffs";
+// } elseif (strpos($referrer, 'staffm.html') !== false) {
+//     //include 'staffm.php';
+//     $messages[] = "staffm";
+// } elseif (strpos($referrer, 'manager.html') !== false) {
+//     //include 'manager.php';
+//     $messages[] = "manager";
+// } else {
+//     echo json_encode(['error' => 'Invalid referrer', 'messages' => $messages]);
+//     exit;
+// }
 
 
 try {
@@ -47,8 +45,7 @@ try {
 if (isset($_GET['table'])) {
     $table = $_GET['table'];
     try {
-        $stmt = $conn->prepare("SELECT * FROM $table WHERE UserInstanceID = :userInstanceID");
-        $stmt->bindParam(':userInstanceID', $_SESSION['UserInstanceID']);
+        $stmt = $conn->prepare("SELECT * FROM $table");
         $stmt->execute();
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         echo json_encode($result);
@@ -58,6 +55,10 @@ if (isset($_GET['table'])) {
     exit;
 }
 
+
+
+
+//THIS CODE IS FOR THE PREDIFINED FUNCTIONS THIS SHOULD BE MOVED TO EACH PERSONAL PHP FILE
 // Handle predefined query request
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $input = json_decode(file_get_contents('php://input'), true);
@@ -65,7 +66,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $queryName = $input['queryName'];
         try {
             $stmt = $conn->prepare($queryName);
-            $stmt->bindParam(':userInstanceID', $_SESSION['UserInstanceID']);
             $stmt->execute();
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
             echo json_encode($result);
@@ -75,6 +75,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 }
+
+
+
+
+
+
+
+
+
+
 
 // form was submitted
 if (isset($_POST['title']) && isset($_POST['content']) && isset($_POST['selectedOption'])) {
@@ -137,11 +147,8 @@ if (isset($_POST['title']) && isset($_POST['content']) && isset($_POST['selected
             }
             $params = [];
 
-            $sql .= " WHERE (UserInstanceID = :userInstanceID OR ShopStaffID = :userInstanceID OR FactoryStaffID = :userInstanceID)";
-            $params[':userInstanceID'] = $_SESSION['UserInstanceID'];
-
             if (!empty($whereField)) {
-                $sql .= " AND $whereField $whereRelation :whereValue";
+                $sql .= " WHERE $whereField $whereRelation :whereValue";
                 $params[':whereValue'] = $whereRelation === 'LIKE' ? "%$whereValue%" : $whereValue;
                 if ($whereRelation === 'NOT') {
                     $sql = str_replace("$whereField NOT :whereValue", "$whereField != :whereValue", $sql);
@@ -180,7 +187,7 @@ if (isset($_POST['title']) && isset($_POST['content']) && isset($_POST['selected
 
         } elseif ($selectedOption == "INSERT") {
             // Separate table name and columns
-            preg_match('/^(\w+)\s*$$(.*)$$$/', $title, $matches);
+            preg_match('/^(\w+)\s*\((.*)\)$/', $title, $matches);
             $tableName = $matches[1];
             $columns = array_map('trim', explode(',', $matches[2]));
         
@@ -226,16 +233,10 @@ if (isset($_POST['title']) && isset($_POST['content']) && isset($_POST['selected
             exit;
 
         } elseif ($selectedOption == "DELETE") {
-            $sql = "DELETE FROM $title WHERE (UserInstanceID = :userInstanceID OR ShopStaffID = :userInstanceID OR FactoryStaffID = :userInstanceID)";
-            $params = [
-                ':userInstanceID' => $_SESSION['UserInstanceID']
-            ];
-            if (!empty($whereField)) {
-                $sql .= " AND $whereField $whereRelation :whereValue";
-                $params[':whereValue'] = $whereValue;
-                if ($whereRelation === 'NOT') {
-                    $sql = str_replace("$whereField NOT :whereValue", "$whereField != :whereValue", $sql);
-                }
+            $sql = "DELETE FROM $title WHERE $whereField $whereRelation :whereValue";
+            $params = [':whereValue' => $whereValue];
+            if ($whereRelation === 'NOT') {
+                $sql = str_replace("$whereField NOT :whereValue", "$whereField != :whereValue", $sql);
             }
             if (isset($_POST['dynamicWhereField']) && isset($_POST['dynamicWhereValue']) && isset($_POST['dynamicWhereRelation']) && isset($_POST['dynamicWhereLogic'])) {
                 $fields = $_POST['dynamicWhereField'];
@@ -262,23 +263,20 @@ if (isset($_POST['title']) && isset($_POST['content']) && isset($_POST['selected
             exit;
 
         } elseif ($selectedOption == "UPDATE") {
-            $sql = "UPDATE $title SET $content";
-            $params = [':userInstanceID' => $_SESSION['UserInstanceID']];
+            // Retrieve dynamic fields for the SET clause
+            $sql = "UPDATE $title";
 
+            $sql .= " SET $content";
             if (isset($_POST['dynamicFromField'])) {
                 $fields = $_POST['dynamicFromField'];
                 for ($i = 0; $i < count($fields); $i++) {
                     $sql .= ", " . $fields[$i];
                 }
             }
-            $sql .= " WHERE (UserInstanceID = :userInstanceID OR ShopStaffID = :userInstanceID OR FactoryStaffID = :userInstanceID)";
-            
-            if (!empty($whereField)) {
-                $sql .= " AND $whereField $whereRelation :whereValue";
-                $params[':whereValue'] = $whereRelation === 'LIKE' ? "%$whereValue%" : $whereValue;
-                if ($whereRelation === 'NOT') {
-                    $sql = str_replace("$whereField NOT :whereValue", "$whereField != :whereValue", $sql);
-                }
+            $sql .= " WHERE $whereField $whereRelation :whereValue";
+            $params[':whereValue'] = $whereRelation === 'LIKE' ? "%$whereValue%" : $whereValue;
+            if ($whereRelation === 'NOT') {
+                $sql = str_replace("$whereField NOT :whereValue", "$whereField != :whereValue", $sql);
             }
 
             if (isset($_POST['dynamicWhereField']) && isset($_POST['dynamicWhereValue']) && isset($_POST['dynamicWhereRelation']) && isset($_POST['dynamicWhereLogic'])) {
@@ -316,4 +314,3 @@ if (isset($_POST['title']) && isset($_POST['content']) && isset($_POST['selected
     }
 }
 ?>
-
