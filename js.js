@@ -454,25 +454,25 @@ function showSQLQuery() {
     return true;
 }
 
-function submitQuery(event) {
-    event.preventDefault();
-    const form = event.target;
-    const formData = new FormData(form);
+// function submitQuery(event) {
+//     event.preventDefault();
+//     const form = event.target;
+//     const formData = new FormData(form);
 
-    fetch('php.php', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        const tableContainer = document.getElementById('tableContainer');
-        tableContainer.innerHTML = generateTableHTML(data);
-        document.getElementById('databaseTableView').classList.remove('hidden');
-        document.getElementById('predefinedQueriesView').classList.add('hidden');
-        document.getElementById('customQueryView').classList.add('hidden');
-    })
-    .catch(error => console.error('Error executing query:', error));
-}
+//     fetch('php.php', {
+//         method: 'POST',
+//         body: formData
+//     })
+//     .then(response => response.json())
+//     .then(data => {
+//         const tableContainer = document.getElementById('tableContainer');
+//         tableContainer.innerHTML = generateTableHTML(data);
+//         document.getElementById('databaseTableView').classList.remove('hidden');
+//         document.getElementById('predefinedQueriesView').classList.add('hidden');
+//         document.getElementById('customQueryView').classList.add('hidden');
+//     })
+//     .catch(error => console.error('Error executing query:', error));
+// }
 
 
 

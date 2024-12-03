@@ -36,8 +36,8 @@
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">HTML Tables</a>
               <ul class="dropdown-menu">
-                <li><a class="dropdown-item" onclick="showTable('Stock')">Stock</a></li>
-                <li><a class="dropdown-item" onclick="showTable('TimeTable')">Timetable</a></li>
+                <li><a class="dropdown-item" onclick="showTable('Factory_Stock')">Stock</a></li>
+                <li><a class="dropdown-item" onclick="showTable('Factory_TimeTable')">Timetable</a></li>
                 <li><hr class="dropdown-divider"></li>
                 <li><a class="dropdown-item" href="#">Something else here</a></li>
               </ul>
@@ -136,12 +136,9 @@
         <div class="secondParam">
           <label id="contentLabel">FROM: </label>
           <select name="content" required id="content">
-            <option value="Material_3_WayJoin_view">Material 3 Way Join</option>
-            <option value="ShopStaffSchedule_view">Staff Schedule</option>
-            <option value="ShopStockStaff_view">Shop Stock</option>
-            <option value="Material_3_WayJoin_view">Material 3 Way Join</option>
+            <option value="FactoryStock_view">Factory Stock</option>
             <option value="factoryStaffSchedule_view">Staff Schedule</option>
-            <option value="three_way_shopStock_join">3 way shop Stock</option>
+            <option value="Material_3_WayJoin_view">Material 3 Way Join</option>
           </select>
         </div>
 
@@ -366,6 +363,8 @@
     .catch(error => console.error('Error executing query:', error));
 }
   </script>
+
+
  <!-- this script is to update parts of the form depending on what function is selected -->
 <script>
   document.addEventListener('DOMContentLoaded', function() {
@@ -459,21 +458,18 @@
                   secondParam.innerHTML = `
                       <label id="contentLabel">FROM: </label>
                       <select name="content" required id="content">
-                        <option value="Material_3_WayJoin_view">Material 3 Way Join</option>
-                        <option value="ShopStaffSchedule_view">Staff Schedule</option>
-                        <option value="ShopStockStaff_view">Shop Stock</option>
-                        <option value="Material_3_WayJoin_view">Material 3 Way Join</option>
+                        <option value="FactoryStock_view">Factory Stock</option>
                         <option value="factoryStaffSchedule_view">Staff Schedule</option>
-                        <option value="three_way_shopStock_join">3 way shop Stock</option>
+                        <option value="Material_3_WayJoin_view">Material 3 Way Join</option>    
                       </select>
                   `;
                 } else if (this.id === 'option-2') {
                     firstParam.innerHTML = `
                     <label id="contentLabel">INSERT INTO:</label>
                       <div>
-                          <span id="title">Purchases (ShopID, StockID, AmountPurchased, PhoneNumber, DatePurchased)</span>
-                          <input type="hidden" name="title" value='Purchases (ShopID, StockID, AmountPurchased, PhoneNumber, DatePurchased)' />
-                      </div>
+                          <span id="title">Purchases (ShopID, StockID, AmountPurchased, Email, PhoneNumber, DatePurchased)</span>
+                          <input type="hidden" name="title" value='Purchases (ShopID, StockID, AmountPurchased, Email, PhoneNumber, DatePurchased)' />
+                       </div>
                     `;
                     secondParam.innerHTML = `
                       <label id="contentLabel">VALUES:</label>

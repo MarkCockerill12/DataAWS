@@ -7,12 +7,15 @@ $dbname     = "SteelSummit";
 $dbuser     = "admin";
 $dbpass     = "WineGums";
 
+
 try {
     // database connection
     $conn = new PDO("mysql:host=$dbhost;port=$dbport;dbname=$dbname", $dbuser, $dbpass);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
-    die("Connection failed: " . $e->getMessage());
+    $messages[] = "Connection failed: " . $e->getMessage();
+    echo json_encode(['error' => 'Database connection failed', 'messages' => $messages]);
+    exit;
 }
 
 // Fetch table data as JSON
@@ -28,6 +31,36 @@ if (isset($_GET['table'])) {
     }
     exit;
 }
+
+
+
+
+// Handle predefined query request
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $input = json_decode(file_get_contents('php://input'), true);
+    if (isset($input['queryName'])) {
+        $queryName = $input['queryName'];
+        try {
+            $stmt = $conn->prepare($queryName);
+            $stmt->execute();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            echo json_encode($result);
+        } catch (PDOException $e) {
+            echo json_encode(['error' => $e->getMessage()]);
+        }
+        exit;
+    }
+}
+
+
+
+
+
+
+
+
+
+
 
 // form was submitted
 if (isset($_POST['title']) && isset($_POST['content']) && isset($_POST['selectedOption'])) {
@@ -126,6 +159,83 @@ if (isset($_POST['title']) && isset($_POST['content']) && isset($_POST['selected
             $q->execute($params);
             $result = $q->fetchAll(PDO::FETCH_ASSOC);
             echo json_encode($result);
+            exit;
+
+        } elseif ($selectedOption == "INSERT") {
+            // Separate table name and columns
+            preg_match('/^(\w+)\s*\((.*)\)$/', $title, $matches);
+            $tableName = $matches[1];
+            $columns = array_map('trim', explode(',', $matches[2]));
+        
+            // Handle values correctly, considering potential commas within strings
+            $values = [];
+            $inQuotes = false;
+            $currentValue = '';
+            for ($i = 0; $i < strlen($content); $i++) {
+                $char = $content[$i];
+                if ($char == "'" && ($i == 0 || $content[$i - 1] != '\\')) {
+                    $inQuotes = !$inQuotes;
+                }
+                if ($char == ',' && !$inQuotes) {
+                    $values[] = trim($currentValue, " '");
+                    $currentValue = '';
+                } else {
+                    $currentValue .= $char;
+                }
+            }
+            $values[] = trim($currentValue, " '");
+        
+            // Handle dynamic fields
+            if (isset($_POST['dynamicFromField'])) {
+                $fields = $_POST['dynamicFromField'];
+                for ($i = 0; $i < count($fields); $i++) {
+                    $values[] = $fields[$i]; // Use the field value directly
+                }
+            }
+        
+            // Ensure the values array matches the columns array in length
+            if (count($columns) !== count($values)) {
+                echo json_encode(['error' => 'Column count does not match value count.']);
+                exit;
+            }
+        
+            $placeholders = implode(',', array_fill(0, count($values), '?'));
+            $sql = "INSERT INTO $tableName (" . implode(',', $columns) . ") VALUES ($placeholders)";
+            
+            // Execute the query and return the result as JSON
+            $q = $conn->prepare($sql);
+            $q->execute($values);
+            echo json_encode(['success' => 'Record inserted successfully.']);
+            exit;
+
+        } elseif ($selectedOption == "DELETE") {
+            $sql = "DELETE FROM $title WHERE $whereField $whereRelation :whereValue";
+            $params = [':whereValue' => $whereValue];
+            if ($whereRelation === 'NOT') {
+                $sql = str_replace("$whereField NOT :whereValue", "$whereField != :whereValue", $sql);
+            }
+            if (isset($_POST['dynamicWhereField']) && isset($_POST['dynamicWhereValue']) && isset($_POST['dynamicWhereRelation']) && isset($_POST['dynamicWhereLogic'])) {
+                $fields = $_POST['dynamicWhereField'];
+                $values = $_POST['dynamicWhereValue'];
+                $relations = $_POST['dynamicWhereRelation'];
+                $logics = $_POST['dynamicWhereLogic'];
+                $conditions = [];
+                for ($i = 0; $i < count($fields); $i++) {
+                    $condition = $logics[$i] . " " . $fields[$i] . " " . $relations[$i] . " :" . $fields[$i];
+                    if ($relations[$i] === 'NOT') {
+                        $condition = str_replace("$fields[$i] NOT :" . $fields[$i], "$fields[$i] != :" . $fields[$i], $condition);
+                    }
+                    $conditions[] = $condition;
+                    $params[":" . $fields[$i]] = $relations[$i] === 'LIKE' ? "%{$values[$i]}%" : $values[$i];
+                }
+                if (!empty($conditions)) {
+                    $sql .= " " . implode(" ", $conditions);
+                }
+            }
+            // Execute the query and return the result as JSON
+            $q = $conn->prepare($sql);
+            $q->execute($params);
+            echo json_encode(['success' => 'Record deleted successfully.']);
             exit;
 
         } elseif ($selectedOption == "UPDATE") {
