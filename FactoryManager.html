@@ -279,28 +279,38 @@
         .catch(error => console.error('Error fetching table data:', error));
 }
 
-function generateTableHTML(data) {
-    if (!Array.isArray(data) || data.length === 0) {
-        console.error('Invalid data format or no data available:', data);
-        return '<p>No data available</p>';
+function runPredefinedQueryWithNumberAndDate(query, numberInputId, dateInputId) {
+        const numberInput = document.getElementById(numberInputId).value;
+        const dateInput = document.getElementById(dateInputId).value;
+        console.log('Selected Number:', numberInput); // Debugging log
+        console.log('Selected Date:', dateInput); // Debugging log
+        if (numberInput && dateInput) {
+            query = query.replace('NUMBER', numberInput).replace('DATE', `"${dateInput}"`);
+            console.log('Query:', query); // Debugging log
+        }
+        fetch('shopmanager.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ queryName: query })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Response Data:', data); // Debugging log
+            if (data.error) {
+                console.error('Error executing query:', data.error);
+            } else {
+                const tableContainer = document.getElementById('tableContainer');
+                tableContainer.innerHTML = generateTableHTML(data);
+                console.log('Generated Table HTML:', tableContainer.innerHTML); // Debugging log
+                document.getElementById('databaseTableView').classList.remove('hidden');
+                document.getElementById('predefinedQueriesView').classList.add('hidden');
+                document.getElementById('customQueryView').classList.add('hidden');
+            }
+        })
+        .catch(error => console.error('Error executing query:', error));
     }
-
-    const headers = Object.keys(data[0]);
-    let tableHTML = '<table class="table table-striped"><thead><tr>';
-    headers.forEach(header => {
-        tableHTML += `<th>${header}</th>`;
-    });
-    tableHTML += '</tr></thead><tbody>';
-    data.forEach(row => {
-        tableHTML += '<tr>';
-        headers.forEach(header => {
-            tableHTML += `<td>${row[header]}</td>`;
-        });
-        tableHTML += '</tr>';
-    });
-    tableHTML += '</tbody></table>';
-    return tableHTML;
-}
 
     function goBack() {
         document.getElementById('databaseTableView').classList.add('hidden');
@@ -393,6 +403,34 @@ function generateTableHTML(data) {
         })
         .catch(error => console.error('Error executing query:', error));
     }
+
+    function runPredefinedQuery(queryName) {
+    fetch('php.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ queryName: queryName })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Data received:', data); // Log the received data
+        const tableContainer = document.getElementById('tableContainer');
+        if (data.error) {
+            console.error('Error executing query:', data.error);
+            tableContainer.innerHTML = `<p>Error: ${data.error}</p>`;
+        } else if (Array.isArray(data) && data.length > 0) {
+            tableContainer.innerHTML = generateTableHTML(data);
+        } else {
+            console.error('No data returned or data is not in expected format');
+            tableContainer.innerHTML = '<p>No data available</p>';
+        }
+        document.getElementById('databaseTableView').classList.remove('hidden');
+        document.getElementById('predefinedQueriesView').classList.add('hidden');
+        document.getElementById('customQueryView').classList.add('hidden');
+    })
+    .catch(error => console.error('Error executing query:', error));
+}
   </script>
 
 
