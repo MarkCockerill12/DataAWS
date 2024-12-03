@@ -12,23 +12,25 @@ $dbpass     = "WineGums";
 $referrer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
 
 //THIS CODE CAUSES ERRORS IT NEEDS TO BE FIXED TO REDIRECT CODE TO THE CORRECT PHP FILE
-// // Redirect based on the referrer
-// if (strpos($referrer, 'ceo.html') !== false) {
-//     //include 'php.php';
-//     $messages[] = "ceo";
-// } elseif (strpos($referrer, 'staffs.html') !== false) {
-//     //include 'staffs.php';
-//     $messages[] = "staffs";
-// } elseif (strpos($referrer, 'staffm.html') !== false) {
-//     //include 'staffm.php';
-//     $messages[] = "staffm";
-// } elseif (strpos($referrer, 'manager.html') !== false) {
-//     //include 'manager.php';
-//     $messages[] = "manager";
-// } else {
-//     echo json_encode(['error' => 'Invalid referrer', 'messages' => $messages]);
-//     exit;
-// }
+// Initialize messages array
+$messages = [];
+
+// Handle logic based on the referrer
+if (strpos($referrer, 'ceo.html') !== false) {
+    $messages[] = "ceo";
+} elseif (strpos($referrer, 'staffs.html') !== false) {
+    include 'staffs.php';
+    $messages[] = "staffs";
+} elseif (strpos($referrer, 'staffm.html') !== false) {
+    include 'staffm.php';
+    $messages[] = "staffm";
+} elseif (strpos($referrer, 'manager.html') !== false) {
+    include 'manager.php';
+    $messages[] = "manager";
+} else {
+    echo json_encode(['error' => 'Invalid referrer', 'messages' => $messages]);
+    exit;
+}
 
 
 try {
