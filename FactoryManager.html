@@ -52,8 +52,17 @@
     <!-- Predefined Queries View -->
     <div id="predefinedQueriesView">
       <h2>Predefined Queries</h2>
-      <button class="btn btn-primary" onclick="runPredefinedQuery('CALL factoryManagerSchedule_query(userID)')">View Factory Staff Timetable</button>      
-      <button class="btn btn-primary" onclick="runPredefinedQuery('CALL ShopSchedule_viewQuery(1, 2024-11-21)')">View Personal Staff Timetable</button>
+      <div>
+        <label for="factoryStaffDate">Select Date for Factory Staff Timetable:</label>
+        <input type="date" id="factoryStaffDate">
+        <label for="factoryStaffNumber">Enter StaffID to find timetable for:</label>
+        <input type="number" id="factoryStaffNumber">
+        <button class="btn btn-primary" onclick="runPredefinedQueryWithNumberAndDate('CALL factoryManagerSchedule_query(NUMBER, DATE)', 'factoryStaffNumber', 'factoryStaffDate')">View Factory Staff Timetable</button>
+    </div>
+    <div>
+        <label for="personalStaffDate">Select Date for Personal Staff Timetable:</label>
+        <input type="date" id="personalStaffDate">
+        <button class="btn btn-primary" onclick="runPredefinedQueryWithDate('CALL ShopSchedule_viewQuery(UserInstanceID, DATE)', 'personalStaffDate')">View Personal Staff Timetable</button>
     </div>
 
     <!-- Custom Query View -->
@@ -352,33 +361,38 @@ function generateTableHTML(data) {
     }
 
 
-    function runPredefinedQuery(queryName) {
-    fetch('php.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ queryName: queryName })
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log('Data received:', data); // Log the received data
-        const tableContainer = document.getElementById('tableContainer');
-        if (data.error) {
-            console.error('Error executing query:', data.error);
-            tableContainer.innerHTML = `<p>Error: ${data.error}</p>`;
-        } else if (Array.isArray(data) && data.length > 0) {
-            tableContainer.innerHTML = generateTableHTML(data);
-        } else {
-            console.error('No data returned or data is not in expected format');
-            tableContainer.innerHTML = '<p>No data available</p>';
+    function runPredefinedQueryWithNumberAndDate(query, numberInputId, dateInputId) {
+        const numberInput = document.getElementById(numberInputId).value;
+        const dateInput = document.getElementById(dateInputId).value;
+        console.log('Selected Number:', numberInput); // Debugging log
+        console.log('Selected Date:', dateInput); // Debugging log
+        if (numberInput && dateInput) {
+            query = query.replace('NUMBER', numberInput).replace('DATE', `"${dateInput}"`);
+            console.log('Query:', query); // Debugging log
         }
-        document.getElementById('databaseTableView').classList.remove('hidden');
-        document.getElementById('predefinedQueriesView').classList.add('hidden');
-        document.getElementById('customQueryView').classList.add('hidden');
-    })
-    .catch(error => console.error('Error executing query:', error));
-}
+        fetch('shopmanager.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ queryName: query })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Response Data:', data); // Debugging log
+            if (data.error) {
+                console.error('Error executing query:', data.error);
+            } else {
+                const tableContainer = document.getElementById('tableContainer');
+                tableContainer.innerHTML = generateTableHTML(data);
+                console.log('Generated Table HTML:', tableContainer.innerHTML); // Debugging log
+                document.getElementById('databaseTableView').classList.remove('hidden');
+                document.getElementById('predefinedQueriesView').classList.add('hidden');
+                document.getElementById('customQueryView').classList.add('hidden');
+            }
+        })
+        .catch(error => console.error('Error executing query:', error));
+    }
   </script>
 
 
