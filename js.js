@@ -166,7 +166,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 THEquery.style.display = 'block';
                 titleLabel.textContent = 'INSERT INTO: ';
                 contentLabel.textContent = 'VALUES: ';
-                whereLabel.textContent = 'you shouldnt see this lol';
+                whereLabel.textContent = 'WHERE:';
                 secondParam.style.display = 'block';
                 thirdParam.style.display = 'none';
                 extraParams.style.display = 'none';
@@ -181,9 +181,9 @@ document.addEventListener('DOMContentLoaded', function() {
             } else if (selectedOption === 'DELETE') {
                 THEquery.style.display = 'block';
                 titleLabel.textContent = 'DELETE FROM: ';
-                contentLabel.textContent = 'WHERE: ';
                 secondParam.style.display = 'none';
                 thirdParam.style.display = 'block';
+                whereLabel.textContent = 'WHERE:';
                 extraParams.style.display = 'none';
             } else {
                 THEquery.style.display = 'none';
@@ -340,6 +340,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 <select name="dynamicWhereRelation[]">
                     <option value="=">=</option>
                     <option value="LIKE">LIKE</option>
+                    <option value="<"><</option>
+                    <option value=">">></option>
+                    <option value="NOT">NOT</option>
                 </select>
                 <input type="text" name="dynamicWhereValue[]" placeholder="Value" />
                 <button type="button" class="removeFieldButton">Remove</button>
@@ -450,3 +453,80 @@ function showSQLQuery() {
     alert(displaySql);
     return true;
 }
+
+function submitQuery(event) {
+    event.preventDefault();
+    const form = event.target;
+    const formData = new FormData(form);
+
+    fetch('php.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        const tableContainer = document.getElementById('tableContainer');
+        tableContainer.innerHTML = generateTableHTML(data);
+        document.getElementById('databaseTableView').classList.remove('hidden');
+        document.getElementById('predefinedQueriesView').classList.add('hidden');
+        document.getElementById('customQueryView').classList.add('hidden');
+    })
+    .catch(error => console.error('Error executing query:', error));
+}
+
+
+
+
+
+
+
+let userInstanceID = null;
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Function to fetch UserInstanceID from the server
+    function fetchUserInstanceID() {
+        fetch('login.php?action=getUserInstanceID')
+            .then(response => response.json())
+            .then(data => {
+                if (data.UserInstanceID && data.UserInstanceID !== null) {
+                    userInstanceID = data.UserInstanceID;
+                    document.dispatchEvent(new CustomEvent('userInstanceIDLoaded', { detail: userInstanceID }));
+                    const displayStaffIDElement = document.getElementById('displayStaffID');
+                    if (displayStaffIDElement) {
+                        displayStaffIDElement.textContent = "StaffID: " + userInstanceID;
+                    } else {
+                        console.error('Element with ID displayStaffID not found');
+                    }
+                    console.log("UserInstanceID:", userInstanceID);
+                } else {
+                    const displayStaffIDElement = document.getElementById('displayStaffID');
+                    if (displayStaffIDElement) {
+                        displayStaffIDElement.textContent = "StaffID: Not logged in";
+                    } else {
+                        console.error('Element with ID displayStaffID not found');
+                    }
+                    console.log("UserInstanceID: Not logged in");
+                }
+            })
+            .catch(error => console.error('Error fetching UserInstanceID:', error));
+    }
+
+    // Call the function to fetch UserInstanceID
+    fetchUserInstanceID();
+    
+
+    // Function to handle logout
+    function logout() {
+        fetch('login.php?action=logout')
+            .then(() => {
+                window.location.href = 'login.html';
+            })
+            .catch(error => console.error('Error logging out:', error));
+    }
+
+    // Add event listener to logout button
+    const logoutButton = document.getElementById('logoutButton');
+    if (logoutButton) {
+        logoutButton.addEventListener('click', logout);
+    }
+});

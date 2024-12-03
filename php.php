@@ -1,18 +1,89 @@
 <?php
-// configuration
-$dbhost     = "172.17.0.3";
+include 'login.php';
+
+$dbhost     = "steelsummit.caonv0ym8btc.us-east-1.rds.amazonaws.com";
 $dbport     = "3306";
 $dbname     = "SteelSummit";
-$dbuser     = "root";
-$dbpass     = "pass";
+$dbuser     = "admin";
+$dbpass     = "WineGums";
+
+
+// Determine the referring URL
+$referrer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
+
+//THIS CODE CAUSES ERRORS :(
+// // Redirect based on the referrer
+// if (strpos($referrer, 'ceo.html') !== false) {
+//     //include 'php.php';
+//     $messages[] = "ceo";
+// } elseif (strpos($referrer, 'staffs.html') !== false) {
+//     //include 'staffs.php';
+//     $messages[] = "staffs";
+// } elseif (strpos($referrer, 'staffm.html') !== false) {
+//     //include 'staffm.php';
+//     $messages[] = "staffm";
+// } elseif (strpos($referrer, 'manager.html') !== false) {
+//     //include 'manager.php';
+//     $messages[] = "manager";
+// } else {
+//     echo json_encode(['error' => 'Invalid referrer', 'messages' => $messages]);
+//     exit;
+// }
+
 
 try {
     // database connection
     $conn = new PDO("mysql:host=$dbhost;port=$dbport;dbname=$dbname", $dbuser, $dbpass);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
-    die("Connection failed: " . $e->getMessage());
+    $messages[] = "Connection failed: " . $e->getMessage();
+    echo json_encode(['error' => 'Database connection failed', 'messages' => $messages]);
+    exit;
 }
+
+// Fetch table data as JSON
+if (isset($_GET['table'])) {
+    $table = $_GET['table'];
+    try {
+        $stmt = $conn->prepare("SELECT * FROM $table");
+        $stmt->execute();
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        echo json_encode($result);
+    } catch (PDOException $e) {
+        echo json_encode(['error' => $e->getMessage()]);
+    }
+    exit;
+}
+
+
+
+
+// Handle predefined query request
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $input = json_decode(file_get_contents('php://input'), true);
+    if (isset($input['queryName'])) {
+        $queryName = $input['queryName'];
+        try {
+            $stmt = $conn->prepare($queryName);
+            $stmt->execute();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            echo json_encode($result);
+        } catch (PDOException $e) {
+            echo json_encode(['error' => $e->getMessage()]);
+        }
+        exit;
+    }
+}
+
+
+
+
+
+
+
+
+
+
 
 // form was submitted
 if (isset($_POST['title']) && isset($_POST['content']) && isset($_POST['selectedOption'])) {
@@ -78,6 +149,9 @@ if (isset($_POST['title']) && isset($_POST['content']) && isset($_POST['selected
             if (!empty($whereField)) {
                 $sql .= " WHERE $whereField $whereRelation :whereValue";
                 $params[':whereValue'] = $whereRelation === 'LIKE' ? "%$whereValue%" : $whereValue;
+                if ($whereRelation === 'NOT') {
+                    $sql = str_replace("$whereField NOT :whereValue", "$whereField != :whereValue", $sql);
+                }
             }
             if (isset($_POST['dynamicWhereField']) && isset($_POST['dynamicWhereValue']) && isset($_POST['dynamicWhereRelation']) && isset($_POST['dynamicWhereLogic'])) {
                 $fields = $_POST['dynamicWhereField'];
@@ -86,7 +160,11 @@ if (isset($_POST['title']) && isset($_POST['content']) && isset($_POST['selected
                 $logics = $_POST['dynamicWhereLogic'];
                 $conditions = [];
                 for ($i = 0; $i < count($fields); $i++) {
-                    $conditions[] = $logics[$i] . " " . $fields[$i] . " " . $relations[$i] . " :" . $fields[$i];
+                    $condition = $logics[$i] . " " . $fields[$i] . " " . $relations[$i] . " :" . $fields[$i];
+                    if ($relations[$i] === 'NOT') {
+                        $condition = str_replace("$fields[$i] NOT :" . $fields[$i], "$fields[$i] != :" . $fields[$i], $condition);
+                    }
+                    $conditions[] = $condition;
                     $params[":" . $fields[$i]] = $relations[$i] === 'LIKE' ? "%{$values[$i]}%" : $values[$i];
                 }
                 if (!empty($conditions)) {
@@ -99,22 +177,12 @@ if (isset($_POST['title']) && isset($_POST['content']) && isset($_POST['selected
             if ($orderBy !== 'none' && !empty($orderByValue)) {
                 $sql .= " ORDER BY " . ($orderByFieldType !== 'none' ? strtoupper($orderByFieldType) . "({$orderByValue})" : $orderByValue) . " $orderBy";
             }
-            // Display the SQL command with the actual values
-            $displaySql = $sql;
-            foreach ($params as $key => $value) {
-                $displaySql = str_replace($key, "'$value'", $displaySql);
-            }
-            echo "<button onclick='history.back()'>Go Back</button>";
-            echo "<p>SQL Command: $displaySql</p>";
+            // Execute the query and return the results as JSON
             $q = $conn->prepare($sql);
             $q->execute($params);
-            $q->setFetchMode(PDO::FETCH_ASSOC);
-            while ($r = $q->fetch()) {
-                foreach ($r as $column => $value) {
-                    echo $column . ": " . $value . "<br>";
-                }
-                echo "<br>";
-            }
+            $result = $q->fetchAll(PDO::FETCH_ASSOC);
+            echo json_encode($result);
+            exit;
 
         } elseif ($selectedOption == "INSERT") {
             // Separate table name and columns
@@ -150,27 +218,25 @@ if (isset($_POST['title']) && isset($_POST['content']) && isset($_POST['selected
         
             // Ensure the values array matches the columns array in length
             if (count($columns) !== count($values)) {
-                echo "Error: Column count does not match value count.";
+                echo json_encode(['error' => 'Column count does not match value count.']);
                 exit;
             }
         
             $placeholders = implode(',', array_fill(0, count($values), '?'));
             $sql = "INSERT INTO $tableName (" . implode(',', $columns) . ") VALUES ($placeholders)";
             
-            // Display the SQL command with the actual values
-            $displaySql = $sql;
-            foreach ($values as $key => $value) {
-                $displaySql = preg_replace('/\?/', "'$value'", $displaySql, 1);
-            }
-            echo "<button onclick='history.back()'>Go Back</button>";
-            echo "<p>SQL Command: $displaySql</p>";
+            // Execute the query and return the result as JSON
             $q = $conn->prepare($sql);
             $q->execute($values);
-            echo "Record inserted successfully.";
+            echo json_encode(['success' => 'Record inserted successfully.']);
+            exit;
 
         } elseif ($selectedOption == "DELETE") {
             $sql = "DELETE FROM $title WHERE $whereField $whereRelation :whereValue";
             $params = [':whereValue' => $whereValue];
+            if ($whereRelation === 'NOT') {
+                $sql = str_replace("$whereField NOT :whereValue", "$whereField != :whereValue", $sql);
+            }
             if (isset($_POST['dynamicWhereField']) && isset($_POST['dynamicWhereValue']) && isset($_POST['dynamicWhereRelation']) && isset($_POST['dynamicWhereLogic'])) {
                 $fields = $_POST['dynamicWhereField'];
                 $values = $_POST['dynamicWhereValue'];
@@ -178,23 +244,22 @@ if (isset($_POST['title']) && isset($_POST['content']) && isset($_POST['selected
                 $logics = $_POST['dynamicWhereLogic'];
                 $conditions = [];
                 for ($i = 0; $i < count($fields); $i++) {
-                    $conditions[] = $logics[$i] . " " . $fields[$i] . " " . $relations[$i] . " :" . $fields[$i];
+                    $condition = $logics[$i] . " " . $fields[$i] . " " . $relations[$i] . " :" . $fields[$i];
+                    if ($relations[$i] === 'NOT') {
+                        $condition = str_replace("$fields[$i] NOT :" . $fields[$i], "$fields[$i] != :" . $fields[$i], $condition);
+                    }
+                    $conditions[] = $condition;
                     $params[":" . $fields[$i]] = $relations[$i] === 'LIKE' ? "%{$values[$i]}%" : $values[$i];
                 }
                 if (!empty($conditions)) {
                     $sql .= " " . implode(" ", $conditions);
                 }
             }
-            // Display the SQL command with the actual values
-            $displaySql = $sql;
-            foreach ($params as $key => $value) {
-                $displaySql = str_replace($key, "'$value'", $displaySql);
-            }
-            echo "<button onclick='history.back()'>Go Back</button>";
-            echo "<p>SQL Command: $displaySql</p>";
+            // Execute the query and return the result as JSON
             $q = $conn->prepare($sql);
             $q->execute($params);
-            echo "Record deleted successfully.";
+            echo json_encode(['success' => 'Record deleted successfully.']);
+            exit;
 
         } elseif ($selectedOption == "UPDATE") {
             // Retrieve dynamic fields for the SET clause
@@ -209,6 +274,9 @@ if (isset($_POST['title']) && isset($_POST['content']) && isset($_POST['selected
             }
             $sql .= " WHERE $whereField $whereRelation :whereValue";
             $params[':whereValue'] = $whereRelation === 'LIKE' ? "%$whereValue%" : $whereValue;
+            if ($whereRelation === 'NOT') {
+                $sql = str_replace("$whereField NOT :whereValue", "$whereField != :whereValue", $sql);
+            }
 
             if (isset($_POST['dynamicWhereField']) && isset($_POST['dynamicWhereValue']) && isset($_POST['dynamicWhereRelation']) && isset($_POST['dynamicWhereLogic'])) {
                 $fields = $_POST['dynamicWhereField'];
@@ -217,7 +285,11 @@ if (isset($_POST['title']) && isset($_POST['content']) && isset($_POST['selected
                 $logics = $_POST['dynamicWhereLogic'];
                 $conditions = [];
                 for ($i = 0; $i < count($fields); $i++) {
-                    $conditions[] = $logics[$i] . " " . $fields[$i] . " " . $relations[$i] . " :" . $fields[$i];
+                    $condition = $logics[$i] . " " . $fields[$i] . " " . $relations[$i] . " :" . $fields[$i];
+                    if ($relations[$i] === 'NOT') {
+                        $condition = str_replace("$fields[$i] NOT :" . $fields[$i], "$fields[$i] != :" . $fields[$i], $condition);
+                    }
+                    $conditions[] = $condition;
                     $params[":" . $fields[$i]] = $relations[$i] === 'LIKE' ? "%{$values[$i]}%" : $values[$i];
                 }
                 if (!empty($conditions)) {
@@ -225,22 +297,19 @@ if (isset($_POST['title']) && isset($_POST['content']) && isset($_POST['selected
                 }
             }
 
-            // Display the SQL command with the actual values
-            $displaySql = $sql;
-            foreach ($params as $key => $value) {
-                $displaySql = str_replace($key, "'$value'", $displaySql);
-            }
-            echo "<button onclick='history.back()'>Go Back</button>";
-            echo "<p>SQL Command: $displaySql</p>";
+            // Execute the query and return the result as JSON
             $q = $conn->prepare($sql);
             $q->execute($params);
-            echo "Record updated successfully.";
+            echo json_encode(['success' => 'Record updated successfully.']);
+            exit;
 
         } else {
-            echo "Invalid operation.";
+            echo json_encode(['error' => 'Invalid operation.']);
+            exit;
         }
     } catch (PDOException $e) {
-        echo "Error: " . $e->getMessage();
+        echo json_encode(['error' => $e->getMessage()]);
+        exit;
     }
 }
 ?>
