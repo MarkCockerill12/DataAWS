@@ -18,6 +18,8 @@
     </style>
 </head>
 <body>
+  <?php session_start(); ?>
+
   <div class="container">
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
@@ -52,8 +54,16 @@
     <!-- Predefined Queries View -->
     <div id="predefinedQueriesView">
       <h2>Predefined Queries</h2>
-      <button class="btn btn-primary" onclick="runPredefinedQuery('CALL factoryManagerSchedule_query(userID)')">View Factory Staff Timetable</button>      
-      <button class="btn btn-primary" onclick="runPredefinedQuery('CALL ShopSchedule_viewQuery(1, 2024-11-21)')">View Personal Staff Timetable</button>
+      <div class="mb-3">
+        <label for="factoryStaffDate" class="form-label">Date for Factory Staff Timetable:</label>
+        <input type="date" id="factoryStaffDate" class="form-control">
+        <button class="btn btn-primary mt-2" onclick="runPredefinedQuery('CALL factoryManagerSchedule_query(UserInstanceID, \'' + document.getElementById('factoryStaffDate').value + '\')')">View Factory Staff Timetable</button>
+      </div>
+      <div class="mb-3">
+        <label for="shopStaffDate" class="form-label">Date for Shop Staff Timetable:</label>
+        <input type="date" id="shopStaffDate" class="form-control">
+        <button class="btn btn-primary mt-2" onclick="runPredefinedQuery('CALL ShopSchedule_viewQuery(UserInstanceID, \'' + document.getElementById('shopStaffDate').value + '\')')">View Shop Staff Timetable</button>
+      </div>
     </div>
 
     <!-- Custom Query View -->
@@ -128,7 +138,7 @@
           </select>
           <input type="text" name="asValue" id="asValue" style="display: none;" placeholder="AS Value" />
           <div id="dynamicTitleFields"></div>
-          <button type="btn btn-primary mt-2" id="addTitleFieldButton">Add Field</button>
+          <button type="button" id="addTitleFieldButton">Add Field</button>
         </div>
 
         <br>
@@ -155,7 +165,7 @@
           </select>
           <input name="whereValue" id="whereValue" placeholder="Value" />
           <div id="dynamicWhereFields"></div>
-          <button type="btn btn-primary mt-2" id="addWhereFieldButton">Add Parameter</button>
+          <button type="button" id="addWhereFieldButton">Add Parameter</button>
         </div>
 
         <div id="extraParams" style="display: none;">
@@ -207,7 +217,7 @@
         </div>
         <br>
         <input type="hidden" name="selectedOption" id="selectedOption" value="Choose Query" />
-        <button class="btn button-confirm btn-primary mt-2" type="submit" title="Confirm" id="confirmButton">Confirm</button>
+        <button class="button" type="submit" title="Confirm" id="confirmButton">Confirm</button>
       </div>
     </form>
   </div>
@@ -519,5 +529,15 @@
     .catch(error => console.error('Error executing query:', error));
 }
   </script>
+<script>
+    document.addEventListener('userInstanceIDLoaded', function(e) {
+        const userInstanceID = e.detail;
+        // Use userInstanceID in your function calls
+        document.querySelectorAll('[data-user-id]').forEach(element => {
+            element.setAttribute('data-user-id', userInstanceID);
+        });
+    });
+</script>
 </body>
 </html>
+

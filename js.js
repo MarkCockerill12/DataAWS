@@ -1,41 +1,6 @@
 console.log("js.js script loaded");
 
 
-function loginButton() {
-    console.log("loginButton");
-    var username = document.getElementById("username").value;
-    var password = document.getElementById("password").value;
-    if (username == "" || password == "") {
-        alert("Please enter username and password");
-        return;
-    }
-    else if (password == "pass") {
-        if (username == "Customer") {
-            window.location.href = "Customer.html";
-        }
-        else if (username == "Staff") {
-            window.location.href = "Staff.html";
-        }
-        else if (username == "Manager") {
-            window.location.href = "Manager.html";
-        }
-        else if (username == "CEO") {
-            window.location.href = "CEO.html";
-        }
-        else if (username == "kermit" || password == "kermit") {
-            alert("bruh what? Kermit? Are you actually kidding me? no thats it im literally taking away your privileges");
-            alert("redirecting to youareanidiot.com");
-            alert("jk");
-        }   
-    }
-    else {
-        alert("Invalid username or password");
-        window.location.href = "image.jpg";
-    }
-
-    console.log(username);
-}
-
 
 // Define global functions first
 function showHelpModal() {
@@ -488,18 +453,31 @@ document.addEventListener('DOMContentLoaded', function() {
         fetch('login.php?action=getUserInstanceID')
             .then(response => response.json())
             .then(data => {
-                if (data.UserInstanceID) {
+                if (data.UserInstanceID && data.UserInstanceID !== null) {
                     userInstanceID = data.UserInstanceID;
-                    document.getElementById('displayStaffID').textContent = "StaffID: " + userInstanceID;
-                    //document.getElementById('userID').textContent = userInstanceID;
-                    console.log("UserInstanceID:", userInstanceID); // Log UserInstanceID to console
+                    document.dispatchEvent(new CustomEvent('userInstanceIDLoaded', { detail: userInstanceID }));
+                    const displayStaffIDElement = document.getElementById('displayStaffID');
+                    if (displayStaffIDElement) {
+                        displayStaffIDElement.textContent = "StaffID: " + userInstanceID;
+                    } else {
+                        console.error('Element with ID displayStaffID not found');
+                    }
+                    console.log("UserInstanceID:", userInstanceID);
                 } else {
-                    document.getElementById('displayStaffID').textContent = "StaffID: Not logged in";
-                    console.log("UserInstanceID: Not logged in"); // Log not logged in message
+                    const displayStaffIDElement = document.getElementById('displayStaffID');
+                    if (displayStaffIDElement) {
+                        displayStaffIDElement.textContent = "StaffID: Not logged in";
+                    } else {
+                        console.error('Element with ID displayStaffID not found');
+                    }
+                    console.log("UserInstanceID: Not logged in");
                 }
             })
             .catch(error => console.error('Error fetching UserInstanceID:', error));
     }
+
+    // Call the function to fetch UserInstanceID
+    fetchUserInstanceID();
 
     // Function to handle logout
     function logout() {
@@ -515,7 +493,4 @@ document.addEventListener('DOMContentLoaded', function() {
     if (logoutButton) {
         logoutButton.addEventListener('click', logout);
     }
-
-    // Call the function to fetch UserInstanceID
-    fetchUserInstanceID();
 });
