@@ -38,13 +38,15 @@ function loginButton() {
 
 function togglePasswordVisibility() {
     const passwordField = document.getElementById('password');
-    const toggleButton = passwordField.nextElementSibling;
+    const toggleIcon = document.getElementById('togglePasswordIcon');
     if (passwordField.type === 'password') {
         passwordField.type = 'text';
-        toggleButton.textContent = 'Hide';
+        toggleIcon.classList.remove('bi-eye');
+        toggleIcon.classList.add('bi-eye-slash');
     } else {
         passwordField.type = 'password';
-        toggleButton.textContent = 'Show';
+        toggleIcon.classList.remove('bi-eye-slash');
+        toggleIcon.classList.add('bi-eye');
     }
 }
 
