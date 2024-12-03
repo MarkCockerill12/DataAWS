@@ -128,7 +128,7 @@
           </select>
           <input type="text" name="asValue" id="asValue" style="display: none;" placeholder="AS Value" />
           <div id="dynamicTitleFields"></div>
-          <button type="button" id="addTitleFieldButton">Add Field</button>
+          <button type="button" class="btn btn-primary" id="addTitleFieldButton">Add Field</button>
         </div>
 
         <br>
@@ -159,7 +159,7 @@
           </select>
           <input name="whereValue" id="whereValue" placeholder="Value" />
           <div id="dynamicWhereFields"></div>
-          <button type="button" id="addWhereFieldButton">Add Parameter</button>
+          <button type="button" class="btn btn-primary" id="addWhereFieldButton">Add Parameter</button>
         </div>
 
         <div id="extraParams" style="display: none;">
@@ -211,7 +211,7 @@
         </div>
         <br>
         <input type="hidden" name="selectedOption" id="selectedOption" value="Choose Query" />
-        <button class="button" type="submit" title="Confirm" id="confirmButton">Confirm</button>
+        <button class="button btn btn-primary" type="submit" title="Confirm" id="confirmButton">Confirm</button>
       </div>
     </form>
   </div>
@@ -395,7 +395,7 @@
                           <option value="as">AS</option>
                       </select>
                       <input type="text" name="dynamicAsValue[]" placeholder="AS Value" style="display: none;" />
-                      <button type="button" class="removeFieldButton">Remove</button>
+                      <button type="button" class="btn btn-primary removeFieldButton">Remove</button>
                   `;
                   dynamicTitleFields.appendChild(newField);
 
@@ -423,7 +423,7 @@
                   newField.innerHTML = `
                       <label>,</label>
                       <input type="text" name="dynamicFromField[]" placeholder="second Field" />
-                      <button type="button" class="removeFieldButton">Remove</button>
+                      <button type="button" class="btn btn-primary removeFieldButton">Remove</button>
                   `;
                   dynamicFromFields.appendChild(newField);
 
@@ -454,7 +454,7 @@
                       </select>
                       <input type="text" name="asValue" id="asValue" style="display: none;" placeholder="AS Value" />
                       <div id="dynamicTitleFields"></div>
-                      <button type="button" id="addTitleFieldButton">Add Field</button>
+                      <button type="button" class="btn btn-primary" id="addTitleFieldButton">Add Field</button>
                   `;
                   secondParam.innerHTML = `
                       <label id="contentLabel">FROM: </label>
@@ -479,7 +479,7 @@
                       <label id="contentLabel">VALUES:</label>
                       <input name="content" required id="content" />
                       <div id="dynamicFromFields"></div>
-                      <button type="button" id="addFromFieldButton">Add VALUE</button>
+                      <button type="button" class="btn btn-primary" id="addFromFieldButton">Add VALUE</button>
                   `;
                 } else if (this.id === 'option-3') {
                     firstParam.innerHTML = `
@@ -494,7 +494,7 @@
                       <label id="contentLabel">FROM:</label>
                       <input name="content" required id="content" />
                       <div id="dynamicFromFields"></div>
-                      <button type="button" id="addFromFieldButton">Add VALUE</button>
+                      <button type="button" class="btn btn-primary" id="addFromFieldButton">Add VALUE</button>
                   `;
               }
               attachEventListeners();
