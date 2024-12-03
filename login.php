@@ -53,7 +53,7 @@ if (isset($_POST["Iusername"], $_POST["Ipassword"])) {
             header("Location: StaffS.html");
             exit();
         } elseif ($row['Position'] == "Manager") {
-            header("Location: Manager.html");
+            header("Location: ShopManager.html");
             exit();
         } elseif ($row['Position'] == "CEO") {
             header("Location: CEO.html");
@@ -80,7 +80,7 @@ if (isset($_POST["Iusername"], $_POST["Ipassword"])) {
                 header("Location: StaffM.html");
                 exit();
             } elseif ($row['Position'] == "Manager") {
-                header("Location: Manager.html");
+                header("Location: FactoryManager.html");
                 exit();
             } elseif ($row['Position'] == "CEO") {
                 header("Location: CEO.html");
