@@ -50,8 +50,8 @@
     <!-- Predefined Queries View -->
     <div id="predefinedQueriesView">
       <h2>Predefined Queries</h2>
-      <button class="btn btn-primary" onclick="runPredefinedQuery('CALL Factorymaterial_viewQuery(1)')">View Factory Materials</button>      
-      <button class="btn btn-primary" onclick="runPredefinedQuery('CALL FactoryStock_viewQuery(displayStaffID)')">View Factory Stock</button>
+      <button class="btn btn-primary" onclick="runPredefinedQuery('CALL Factorymaterial_viewQuery(UserInstanceID)')">View Factory Materials</button>      
+      <button class="btn btn-primary" onclick="runPredefinedQuery('CALL FactoryStock_viewQuery(UserInstanceID)')">View Factory Stock</button>
     </div>
 
     <!-- Custom Query View -->
@@ -328,28 +328,45 @@
     }
 
 
-    function runPredefinedQuery(queryName) {
-    fetch('php.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ queryName: queryName })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.error) {
-            console.error('Error executing query:', data.error);
-        } else {
-            const tableContainer = document.getElementById('tableContainer');
-            tableContainer.innerHTML = generateTableHTML(data);
-            document.getElementById('databaseTableView').classList.remove('hidden');
-            document.getElementById('predefinedQueriesView').classList.add('hidden');
-            document.getElementById('customQueryView').classList.add('hidden');
+    document.addEventListener('DOMContentLoaded', function() {
+        fetch('login.php?action=getUserInstanceID')
+            .then(response => response.json())
+            .then(data => {
+                if (data.UserInstanceID) {
+                    window.UserInstanceID = data.UserInstanceID;
+                } else {
+                    console.error('UserInstanceID not found');
+                }
+            })
+            .catch(error => console.error('Error fetching UserInstanceID:', error));
+    });
+
+    function runPredefinedQuery(query) {
+        if (window.UserInstanceID) {
+            query = query.replace('UserInstanceID', window.UserInstanceID);
         }
-    })
-    .catch(error => console.error('Error executing query:', error));
-}
+        fetch('php.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ queryName: query })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                console.error('Error executing query:', data.error);
+            } else {
+                const tableContainer = document.getElementById('tableContainer');
+                tableContainer.innerHTML = generateTableHTML(data);
+                document.getElementById('databaseTableView').classList.remove('hidden');
+                document.getElementById('predefinedQueriesView').classList.add('hidden');
+                document.getElementById('customQueryView').classList.add('hidden');
+            }
+        })
+        .catch(error => console.error('Error executing query:', error));
+    }
+
   </script>
 </body>
 </html>

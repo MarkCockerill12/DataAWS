@@ -53,8 +53,8 @@
     <!-- Predefined Queries View -->
     <div id="predefinedQueriesView">
       <h2>Predefined Queries</h2>
-      <button class="btn btn-primary" onclick="runPredefinedQuery('CALL ShopStock_viewQuery(userID)')">View Shop Stock</button>      
-      <button class="btn btn-primary" onclick="runPredefinedQuery('CALL ShopSchedulePersonal_viewQuery(1)')">View Personal Staff Timetable</button>
+      <button class="btn btn-primary" onclick="runPredefinedQuery('CALL ShopStock_viewQuery(UserInstanceID)')">View Shop Stock</button>      
+      <button class="btn btn-primary" onclick="runPredefinedQuery('CALL ShopSchedulePersonal_viewQuery(UserInstanceID)')">View Personal Staff Timetable</button>
     </div>
 
     <!-- Custom Query View -->
@@ -256,29 +256,31 @@
             .catch(error => console.error('Error fetching table data:', error));
     }
 
-    function generateTableHTML(data) {
-        if (data.length === 0) return '<p>No data available</p>';
+function generateTableHTML(data) {
+    if (data.length === 0) return '<p>No data available</p>';
 
-        const headers = Object.keys(data[0]);
-        let tableHTML = '<table class="table table-striped"><thead><tr>';
+    const headers = Object.keys(data[0]);
+    let tableHTML = '<table class="table table-striped"><thead><tr>';
+    headers.forEach(header => {
+        tableHTML += `<th>${header}</th>`;
+    });
+    tableHTML += '</tr></thead><tbody>';
+    data.forEach(row => {
+        tableHTML += '<tr>';
         headers.forEach(header => {
-            tableHTML += `<th>${header}</th>`;
+            const cellValue = row[header] === null ? 'null' : row[header];
+            tableHTML += `<td>${cellValue}</td>`;
         });
-        tableHTML += '</tr></thead><tbody>';
-        data.forEach(row => {
-            tableHTML += '<tr>';
-            headers.forEach(header => {
-                tableHTML += `<td>${row[header]}</td>`;
-            });
-            tableHTML += '</tr>';
-        });
-        tableHTML += '</tbody></table>';
-        return tableHTML;
-    }
+        tableHTML += '</tr>';
+    });
+    tableHTML += '</tbody></table>';
+    return tableHTML;
+}
 
     function goBack() {
         document.getElementById('databaseTableView').classList.add('hidden');
         document.getElementById('predefinedQueriesView').classList.remove('hidden');
+        document.getElementById('customQueryView').classList.add('hidden');
     }
 
     const selectOptions = document.querySelectorAll('input[name="option"]');
@@ -335,28 +337,45 @@
     }
 
 
-    function runPredefinedQuery(queryName) {
-    fetch('php.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ queryName: queryName })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.error) {
-            console.error('Error executing query:', data.error);
-        } else {
-            const tableContainer = document.getElementById('tableContainer');
-            tableContainer.innerHTML = generateTableHTML(data);
-            document.getElementById('databaseTableView').classList.remove('hidden');
-            document.getElementById('predefinedQueriesView').classList.add('hidden');
-            document.getElementById('customQueryView').classList.add('hidden');
+    document.addEventListener('DOMContentLoaded', function() {
+        fetch('login.php?action=getUserInstanceID')
+            .then(response => response.json())
+            .then(data => {
+                if (data.UserInstanceID) {
+                    window.UserInstanceID = data.UserInstanceID;
+                } else {
+                    console.error('UserInstanceID not found');
+                }
+            })
+            .catch(error => console.error('Error fetching UserInstanceID:', error));
+    });
+
+    function runPredefinedQuery(query) {
+        if (window.UserInstanceID) {
+            query = query.replace('UserInstanceID', window.UserInstanceID);
         }
-    })
-    .catch(error => console.error('Error executing query:', error));
-}
+        fetch('php.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ queryName: query })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                console.error('Error executing query:', data.error);
+            } else {
+                const tableContainer = document.getElementById('tableContainer');
+                tableContainer.innerHTML = generateTableHTML(data);
+                document.getElementById('databaseTableView').classList.remove('hidden');
+                document.getElementById('predefinedQueriesView').classList.add('hidden');
+                document.getElementById('customQueryView').classList.add('hidden');
+            }
+        })
+        .catch(error => console.error('Error executing query:', error));
+    }
+
   </script>
 
 <!-- this script is to update parts of the form depending on what function is selected -->

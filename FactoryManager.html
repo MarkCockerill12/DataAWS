@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Manager</title>
+    <title>Factory Manager</title>
     <link rel="stylesheet" href="userType.css"/>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <script src="js.js" defer></script>
@@ -52,9 +52,17 @@
     <!-- Predefined Queries View -->
     <div id="predefinedQueriesView">
       <h2>Predefined Queries</h2>
-      <button class="btn btn-primary" onclick="runPredefinedQuery('CALL factoryManagerSchedule_query(userID)')">View Factory Staff Timetable</button>      
-      <button class="btn btn-primary" onclick="runPredefinedQuery('CALL ShopSchedule_viewQuery(1, 2024-11-21)')">View Personal Staff Timetable</button>
-    </div>
+      <div>
+          <label for="factoryStaffDate">Select Date for Factory Staff Timetable:</label>
+          <input type="date" id="factoryStaffDate">
+          <button class="btn btn-primary" onclick="runPredefinedQueryWithDate('CALL factoryManagerSchedule_query(UserInstanceID, DATE)', 'factoryStaffDate')">View Factory Staff Timetable</button>
+      </div>
+      <div>
+          <label for="personalStaffDate">Select Date for Personal Staff Timetable:</label>
+          <input type="date" id="personalStaffDate">
+          <button class="btn btn-primary" onclick="runPredefinedQueryWithDate('CALL ShopSchedule_viewQuery(UserInstanceID, DATE)', 'personalStaffDate')">View Personal Staff Timetable</button>
+      </div>
+  </div>
 
     <!-- Custom Query View -->
     <div id="customQueryView" class="hidden">
@@ -84,7 +92,7 @@
  <form name="frmContact" class="needs-validation" method="post" onsubmit="submitQuery(event)">
   <!-- Dropdown menu to select the query type -->
   <div class="select">
-    <div class="selected" data-default="Choose Query" data-one="SELECT" data-two="INSERT" data-three="UPDATE">
+    <div class="selected" data-default="Choose Query" data-one="SELECT" data-two="UPDATE">
       <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512" class="arrow">
         <path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"></path>
       </svg>
@@ -100,11 +108,7 @@
       </div>
       <div title="option-2">
         <input id="option-2" name="option" type="radio" />
-        <label class="option" for="option-2" data-txt="INSERT"></label>
-      </div>
-      <div title="option-3">
-        <input id="option-3" name="option" type="radio" />
-        <label class="option" for="option-3" data-txt="UPDATE"></label>
+        <label class="option" for="option-2" data-txt="UPDATE"></label>
       </div>
     </div>
   </div>
@@ -340,28 +344,46 @@
     }
 
 
-    function runPredefinedQuery(queryName) {
-    fetch('php.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ queryName: queryName })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.error) {
-            console.error('Error executing query:', data.error);
-        } else {
-            const tableContainer = document.getElementById('tableContainer');
-            tableContainer.innerHTML = generateTableHTML(data);
-            document.getElementById('databaseTableView').classList.remove('hidden');
-            document.getElementById('predefinedQueriesView').classList.add('hidden');
-            document.getElementById('customQueryView').classList.add('hidden');
+    document.addEventListener('DOMContentLoaded', function() {
+        fetch('login.php?action=getUserInstanceID')
+            .then(response => response.json())
+            .then(data => {
+                if (data.UserInstanceID) {
+                    window.UserInstanceID = data.UserInstanceID;
+                } else {
+                    console.error('UserInstanceID not found');
+                }
+            })
+            .catch(error => console.error('Error fetching UserInstanceID:', error));
+    });
+
+    function runPredefinedQueryWithDate(query, dateInputId) {
+        const dateInput = document.getElementById(dateInputId).value;
+        console.log('Selected Date:', dateInput);
+        if (window.UserInstanceID && dateInput) {
+            query = query.replace('UserInstanceID', window.UserInstanceID).replace('DATE', dateInput);
         }
-    })
-    .catch(error => console.error('Error executing query:', error));
-}
+        fetch('php.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ queryName: query })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                console.error('Error executing query:', data.error);
+            } else {
+                const tableContainer = document.getElementById('tableContainer');
+                tableContainer.innerHTML = generateTableHTML(data);
+                document.getElementById('databaseTableView').classList.remove('hidden');
+                document.getElementById('predefinedQueriesView').classList.add('hidden');
+                document.getElementById('customQueryView').classList.add('hidden');
+            }
+        })
+        .catch(error => console.error('Error executing query:', error));
+    }
   </script>
 
 
@@ -465,21 +487,7 @@
                   `;
                 } else if (this.id === 'option-2') {
                     firstParam.innerHTML = `
-                    <label id="contentLabel">INSERT INTO:</label>
-                      <div>
-                          <span id="title">Purchases (ShopID, StockID, AmountPurchased, Email, PhoneNumber, DatePurchased)</span>
-                          <input type="hidden" name="title" value='Purchases (ShopID, StockID, AmountPurchased, Email, PhoneNumber, DatePurchased)' />
-                       </div>
-                    `;
-                    secondParam.innerHTML = `
-                      <label id="contentLabel">VALUES:</label>
-                      <input name="content" required id="content" />
-                      <div id="dynamicFromFields"></div>
-                      <button type="button" class="btn btn-primary" id="addFromFieldButton">Add VALUE</button>
-                  `;
-                } else if (this.id === 'option-3') {
-                    firstParam.innerHTML = `
-                        <label id="titleLabel">Title</label>
+                        <label id="titleLabel">UPDATE: </label>
                         <select name="titleFieldType" id="titleFieldType">
                             <option value="Table1">Table1</option>
                             <option value="Table2">Table2</option>
@@ -500,28 +508,46 @@
       attachEventListeners();
   });
 
-  function runPredefinedQuery(queryName) {
-    fetch('php.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ queryName: queryName })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.error) {
-            console.error('Error executing query:', data.error);
-        } else {
-            const tableContainer = document.getElementById('tableContainer');
-            tableContainer.innerHTML = generateTableHTML(data);
-            document.getElementById('databaseTableView').classList.remove('hidden');
-            document.getElementById('predefinedQueriesView').classList.add('hidden');
-            document.getElementById('customQueryView').classList.add('hidden');
+  document.addEventListener('DOMContentLoaded', function() {
+        fetch('login.php?action=getUserInstanceID')
+            .then(response => response.json())
+            .then(data => {
+                if (data.UserInstanceID) {
+                    window.UserInstanceID = data.UserInstanceID;
+                } else {
+                    console.error('UserInstanceID not found');
+                }
+            })
+            .catch(error => console.error('Error fetching UserInstanceID:', error));
+    });
+
+    function runPredefinedQueryWithDate(query, dateInputId) {
+        const dateInput = document.getElementById(dateInputId).value;
+        if (window.UserInstanceID && dateInput) {
+            query = query.replace('UserInstanceID', window.UserInstanceID).replace('DATE', dateInput);
         }
-    })
-    .catch(error => console.error('Error executing query:', error));
-}
+        fetch('php.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ queryName: query })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                console.error('Error executing query:', data.error);
+            } else {
+                const tableContainer = document.getElementById('tableContainer');
+                tableContainer.innerHTML = generateTableHTML(data);
+                document.getElementById('databaseTableView').classList.remove('hidden');
+                document.getElementById('predefinedQueriesView').classList.add('hidden');
+                document.getElementById('customQueryView').classList.add('hidden');
+            }
+        })
+        .catch(error => console.error('Error executing query:', error));
+    }
+
   </script>
 </body>
 </html>

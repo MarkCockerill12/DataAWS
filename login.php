@@ -50,10 +50,10 @@ if (isset($_POST["Iusername"], $_POST["Ipassword"])) {
         $Department = "Shop";
 
         if ($row['Position'] == "Staff") {
-            header("Location: StaffS.html");
+            header("Location: ShopStaff.html");
             exit();
-        } elseif ($row['Position'] == "Manager") {
-            header("Location: Manager.html");
+        } elseif ($row['Position'] == "ShopManager") {
+            header("Location: ShopManager.html");
             exit();
         } elseif ($row['Position'] == "CEO") {
             header("Location: CEO.html");
@@ -77,10 +77,10 @@ if (isset($_POST["Iusername"], $_POST["Ipassword"])) {
             $Department = "Factory";
 
             if ($row['Position'] == "Staff") {
-                header("Location: StaffM.html");
+                header("Location: FactoryStaff.html");
                 exit();
             } elseif ($row['Position'] == "Manager") {
-                header("Location: Manager.html");
+                header("Location: FactoryManager.html");
                 exit();
             } elseif ($row['Position'] == "CEO") {
                 header("Location: CEO.html");

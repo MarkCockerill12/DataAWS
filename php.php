@@ -14,10 +14,10 @@ $referrer = isset($_SERVER['HTTP_REFERER']) ? parse_url($_SERVER['HTTP_REFERER']
 if (strpos($referrer, '/CEO.html') !== false) {
     include 'CEO.php'; // Include the respective PHP file
     exit;
-} elseif (strpos($referrer, '/StaffM.html') !== false) {
+} elseif (strpos($referrer, '/FactoryStaff.html') !== false) {
     include 'FactoryStaff.php';
     exit;
-} elseif (strpos($referrer, '/StaffS.html') !== false) {
+} elseif (strpos($referrer, '/ShopStaff.html') !== false) {
     include 'ShopStaff.php';
     exit;
 } elseif (strpos($referrer, '/ShopManager.html') !== false) {

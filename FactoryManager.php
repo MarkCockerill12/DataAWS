@@ -8,8 +8,8 @@ $dbuser     = "FactoryManager";
 $dbpass     = "Pass123";
 
 
+// Database connection
 try {
-    // database connection
     $conn = new PDO("mysql:host=$dbhost;port=$dbport;dbname=$dbname", $dbuser, $dbpass);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
@@ -32,9 +32,6 @@ if (isset($_GET['table'])) {
     exit;
 }
 
-
-
-
 // Handle predefined query request
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $input = json_decode(file_get_contents('php://input'), true);
@@ -52,11 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-
-
-
-
-// form was submitted
+// Form was submitted
 if (isset($_POST['title']) && isset($_POST['content']) && isset($_POST['selectedOption'])) {
     $title = $_POST['title'];
     $content = $_POST['content'];
@@ -76,7 +69,7 @@ if (isset($_POST['title']) && isset($_POST['content']) && isset($_POST['selected
     $rightAttribute = isset($_POST['rightAttribute']) ? $_POST['rightAttribute'] : '';
 
     try {
-        // query using prepared statements
+        // Query using prepared statements
         if ($selectedOption == "SELECT") {
             $sql = "SELECT $title";
             if ($as) {
@@ -200,6 +193,36 @@ if (isset($_POST['title']) && isset($_POST['content']) && isset($_POST['selected
             $q = $conn->prepare($sql);
             $q->execute($values);
             echo json_encode(['success' => 'Record inserted successfully.']);
+            exit;
+
+        } elseif ($selectedOption == "DELETE") {
+            $sql = "DELETE FROM $title WHERE $whereField $whereRelation :whereValue";
+            $params = [':whereValue' => $whereValue];
+            if ($whereRelation === 'NOT') {
+                $sql = str_replace("$whereField NOT :whereValue", "$whereField != :whereValue", $sql);
+            }
+            if (isset($_POST['dynamicWhereField']) && isset($_POST['dynamicWhereValue']) && isset($_POST['dynamicWhereRelation']) && isset($_POST['dynamicWhereLogic'])) {
+                $fields = $_POST['dynamicWhereField'];
+                $values = $_POST['dynamicWhereValue'];
+                $relations = $_POST['dynamicWhereRelation'];
+                $logics = $_POST['dynamicWhereLogic'];
+                $conditions = [];
+                for ($i = 0; $i < count($fields); $i++) {
+                    $condition = $logics[$i] . " " . $fields[$i] . " " . $relations[$i] . " :" . $fields[$i];
+                    if ($relations[$i] === 'NOT') {
+                        $condition = str_replace("$fields[$i] NOT :" . $fields[$i], "$fields[$i] != :" . $fields[$i], $condition);
+                    }
+                    $conditions[] = $condition;
+                    $params[":" . $fields[$i]] = $relations[$i] === 'LIKE' ? "%{$values[$i]}%" : $values[$i];
+                }
+                if (!empty($conditions)) {
+                    $sql .= " " . implode(" ", $conditions);
+                }
+            }
+            // Execute the query and return the result as JSON
+            $q = $conn->prepare($sql);
+            $q->execute($params);
+            echo json_encode(['success' => 'Record deleted successfully.']);
             exit;
 
         } elseif ($selectedOption == "UPDATE") {
