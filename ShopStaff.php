@@ -4,12 +4,12 @@ include 'login.php';
 $dbhost     = "steelsummit.caonv0ym8btc.us-east-1.rds.amazonaws.com";
 $dbport     = "3306";
 $dbname     = "SteelSummit";
-$dbuser     = "admin";
-$dbpass     = "WineGums";
+$dbuser     = "ShopStaff";
+$dbpass     = "password123";
 
 
-// Database connection
 try {
+    // database connection
     $conn = new PDO("mysql:host=$dbhost;port=$dbport;dbname=$dbname", $dbuser, $dbpass);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
@@ -32,6 +32,9 @@ if (isset($_GET['table'])) {
     exit;
 }
 
+
+
+
 // Handle predefined query request
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $input = json_decode(file_get_contents('php://input'), true);
@@ -49,7 +52,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Form was submitted
+
+
+
+
+
+
+
+
+
+
+// form was submitted
 if (isset($_POST['title']) && isset($_POST['content']) && isset($_POST['selectedOption'])) {
     $title = $_POST['title'];
     $content = $_POST['content'];
@@ -69,7 +82,7 @@ if (isset($_POST['title']) && isset($_POST['content']) && isset($_POST['selected
     $rightAttribute = isset($_POST['rightAttribute']) ? $_POST['rightAttribute'] : '';
 
     try {
-        // Query using prepared statements
+        // query using prepared statements
         if ($selectedOption == "SELECT") {
             $sql = "SELECT $title";
             if ($as) {
