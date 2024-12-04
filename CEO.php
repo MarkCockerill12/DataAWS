@@ -4,8 +4,8 @@ include 'login.php';
 $dbhost     = "steelsummit.caonv0ym8btc.us-east-1.rds.amazonaws.com";
 $dbport     = "3306";
 $dbname     = "SteelSummit";
-$dbuser     = "admin";
-$dbpass     = "WineGums";
+$dbuser     = "CEO";
+$dbpass     = "password123";
 
 
 // Database connection
